@@ -1,0 +1,22 @@
+# Claude Code設定
+.mcp.json
+.claude/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# ビルド成果物
+build/
+dist/
+*.exe
+*.spec
+
+# 個人設定（パスや個人情報を含む）
+rakuten_seikyu/settings.json
+
+# OS
+.DS_Store
+Thumbs.db
