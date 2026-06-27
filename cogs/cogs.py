@@ -294,6 +294,62 @@ def start_bgm():
     pyxel.playm(0, loop=True)
 
 
+TITLE_FONT = {
+    "C": [
+        "  ########  ",
+        " ##      ## ",
+        "##        ##",
+        "##          ",
+        "##          ",
+        "##          ",
+        "##          ",
+        "##          ",
+        "##        ##",
+        " ##      ## ",
+        "  ########  ",
+        "            ",
+    ],
+    "G": [
+        "  ########  ",
+        " ##      ## ",
+        "##        ##",
+        "##          ",
+        "##          ",
+        "##    ######",
+        "##       ## ",
+        "##        ##",
+        "##        ##",
+        " ##      ## ",
+        "  ########  ",
+        "            ",
+    ],
+    "S": [
+        "  ########  ",
+        " ##      ## ",
+        "##          ",
+        " ##         ",
+        "  ######    ",
+        "      ####  ",
+        "        ### ",
+        "          ##",
+        "##        ##",
+        " ##      ## ",
+        "  ########  ",
+        "            ",
+    ],
+}
+
+
+def draw_title_char(x, y, ch, col, scale=4):
+    glyph = TITLE_FONT.get(ch)
+    if not glyph:
+        return
+    for row in range(len(glyph)):
+        for c in range(len(glyph[row])):
+            if glyph[row][c] == "#":
+                pyxel.rect(x + c * scale, y + row * scale, scale, scale, col)
+
+
 FONT8 = {
     "S": [
         "  ####  ",
@@ -444,8 +500,16 @@ class App:
         self.all_clear = False
         self.intro_timer = 0
         self.playing = False
+        self.on_title = True
 
-        self.load_stage(0)
+        self.title_gears = [
+            Gear(x=30, y=380, teeth=20, radius=100, speed=0.15),
+            Gear(x=430, y=310, teeth=16, radius=gr(16), speed=-0.3),
+            Gear(x=440, y=70, teeth=12, radius=gr(12), speed=0.5),
+            Gear(x=50, y=60, teeth=6, radius=gr(6), speed=-1.0),
+        ]
+        self.title_gear_o = Gear(x=0, y=0, teeth=10, radius=22, speed=0.6)
+
         start_bgm()
 
         pyxel.run(self.update, self.draw)
@@ -549,6 +613,15 @@ class App:
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
+
+        if self.on_title:
+            for g in self.title_gears:
+                g.update()
+            self.title_gear_o.update()
+            if pyxel.btnp(pyxel.KEY_RETURN):
+                self.on_title = False
+                self.load_stage(0)
+            return
 
         if self.intro_timer > 0:
             self.intro_timer -= 1
@@ -679,6 +752,36 @@ class App:
 
     def draw(self):
         pyxel.cls(0)
+
+        if self.on_title:
+            for g in self.title_gears:
+                g.draw(1)
+
+            scale = 4
+            cw = 13 * scale
+            total_w = cw * 4
+            tx = (512 - total_w) // 2
+            ty = 120
+
+            draw_title_char(tx, ty, "C", 13, scale)
+
+            ox = tx + cw
+            oy = ty + 2 * scale
+            self.title_gear_o.x = ox + 6 * scale
+            self.title_gear_o.y = oy + 5 * scale
+            self.title_gear_o.draw(6)
+
+            draw_title_char(tx + cw * 2, ty, "G", 13, scale)
+            draw_title_char(tx + cw * 3, ty, "S", 13, scale)
+
+            sub = "Fill the missing cog."
+            pyxel.text((512 - len(sub) * 4) // 2, ty + 18 * scale, sub, 5)
+
+            blink = (pyxel.frame_count // 20) % 2
+            if blink:
+                msg = "PRESS ENTER TO START"
+                pyxel.text((512 - len(msg) * 4) // 2, 300, msg, 7)
+            return
 
         stage = STAGES[self.stage_idx]
 
