@@ -289,9 +289,107 @@ def setup_sounds():
 
     pyxel.musics[0].set([10, 13], [11], [12])
 
+    # BGM 1: Title - ambient, mysterious, slow
+    pyxel.sounds[20].set(
+        "c1rrrr c1rrrr d#1rrrr c1rrrr",
+        "p",
+        "30000 30000 20000 30000",
+        "f",
+        30,
+    )
+    pyxel.sounds[21].set(
+        "rrrg2r rrrd#2r rrrf2r rrrc2r",
+        "t",
+        "00020 00020 00020 00020",
+        "f",
+        30,
+    )
+    pyxel.sounds[22].set(
+        "rrrrrrrr c3rrrrrrr rrrrrrrr g2rrrrrrr rrrrrrrr d#3rrrrrrr rrrrrrrr c3rrrrrrr",
+        "p",
+        "00000000 20000000 00000000 20000000 00000000 20000000 00000000 10000000",
+        "f",
+        30,
+    )
+    pyxel.musics[1].set([20], [21], [22])
 
-def start_bgm():
-    pyxel.playm(0, loop=True)
+    # BGM 2: Danger - same factory BGM but faster tempo
+    # warning phrase (1 bar, 3ch chord, plays once before tempo up)
+    pyxel.sounds[33].set(
+        "c3rc3r d#3rd#3r f3rf3r g3g3g#3g3 g#3g#3g#3g#3g#3g#3",
+        "s",
+        "5050 5050 6060 6666 666655",
+        "n",
+        10,
+    )
+    pyxel.sounds[35].set(
+        "d#3rd#3r f3rf3r g#3rg#3r c4c4c4c4 c4c4c4c4c4c4",
+        "p",
+        "4040 4040 5050 5555 555544",
+        "n",
+        10,
+    )
+    pyxel.sounds[36].set(
+        "g2rg2r g#2rg#2r c3rc3r d#3d#3d#3d#3 d#3d#3d#3d#3d#3d#3",
+        "t",
+        "3030 3030 4040 4444 444433",
+        "n",
+        10,
+    )
+    # fast versions of factory BGM (speed 12 instead of 20)
+    pyxel.sounds[30].set(
+        "c1rc1r c1rc1r c1rc1r c1rc1r",
+        "p",
+        "4040 4040 4040 4040",
+        "f",
+        12,
+    )
+    pyxel.sounds[34].set(
+        "c1rc1r d#1rd#1r f1rf1r d#1rc1r",
+        "p",
+        "4040 3030 3030 4040",
+        "f",
+        12,
+    )
+    pyxel.sounds[31].set(
+        "c2d#2f2d#2 c2d#2f2g2 g#2g2f2d#2 f2d#2c2c2",
+        "s",
+        "2233 2233 3322 3322",
+        "n",
+        12,
+    )
+    pyxel.sounds[32].set(
+        "rrrg3 rrc3r rrrd#3 rrf3r rrrg3 rrc4r rrrd#3 c3rrr",
+        "n",
+        "00020020 00020020 00020020 20000000",
+        "f",
+        12,
+    )
+    pyxel.musics[2].set([30, 34], [31], [32])
+
+    # BGM 3: All Clear - triumphant, bright, resolution
+    pyxel.sounds[40].set(
+        "c2rc2r e2re2r g2rg2r c3rc3r",
+        "p",
+        "4040 4040 4040 5050",
+        "n",
+        20,
+    )
+    pyxel.sounds[41].set(
+        "c3e3g3c4 e3g3c4e4 g3c4e4g4 e4g4c4e4",
+        "t",
+        "3456 3456 3456 4564",
+        "n",
+        20,
+    )
+    pyxel.sounds[42].set(
+        "rrrc3 rrre3 rrrg3 rrrc4",
+        "p",
+        "0003 0003 0004 0004",
+        "n",
+        20,
+    )
+    pyxel.musics[3].set([40], [41], [42])
 
 
 TITLE_FONT = {
@@ -501,6 +599,8 @@ class App:
         self.intro_timer = 0
         self.playing = False
         self.on_title = True
+        self.current_bgm = -1
+        self.danger_wait = 0
 
         self.title_gears = [
             Gear(x=30, y=380, teeth=20, radius=100, speed=0.15),
@@ -510,9 +610,25 @@ class App:
         ]
         self.title_gear_o = Gear(x=0, y=0, teeth=10, radius=22, speed=0.6)
 
-        start_bgm()
+        self.play_bgm(1)
 
         pyxel.run(self.update, self.draw)
+
+    def play_bgm(self, idx):
+        if self.current_bgm != idx:
+            self.current_bgm = idx
+            pyxel.playm(idx, loop=True)
+
+    def update_bgm_tension(self):
+        if self.actions_left <= 1 and self.current_bgm != 2:
+            pyxel.stop()
+            pyxel.play(0, 33)
+            pyxel.play(1, 35)
+            pyxel.play(2, 36)
+            self.current_bgm = -1
+            self.danger_wait = 50
+        elif self.actions_left > 1 and self.current_bgm == 2:
+            self.play_bgm(0)
 
     def load_stage(self, idx):
         self.stage_idx = idx
@@ -570,6 +686,7 @@ class App:
             self.actions_left -= 1
             self.show_message("MISS!", 60)
             pyxel.play(3, 1)
+            self.update_bgm_tension()
             self.check_game_over()
             return
 
@@ -585,6 +702,7 @@ class App:
                 self.actions_left -= 1
                 self.show_message("BAD ORDER!", 60)
                 pyxel.play(3, 1)
+                self.update_bgm_tension()
                 self.check_game_over()
                 return
 
@@ -609,6 +727,8 @@ class App:
             pyxel.play(3, 2)
         elif self.actions_left <= 0:
             self.game_over = True
+        else:
+            self.update_bgm_tension()
 
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
@@ -621,6 +741,7 @@ class App:
             if pyxel.btnp(pyxel.KEY_RETURN):
                 self.on_title = False
                 self.load_stage(0)
+                self.play_bgm(0)
             return
 
         if self.intro_timer > 0:
@@ -638,14 +759,22 @@ class App:
             if self.clear_timer > 120 and pyxel.btnp(pyxel.KEY_RETURN):
                 if self.stage_idx + 1 < len(STAGES):
                     self.load_stage(self.stage_idx + 1)
+                    self.play_bgm(0)
                 else:
                     self.all_clear = True
+                    self.play_bgm(3)
             return
 
         if self.game_over:
             if pyxel.btnp(pyxel.KEY_RETURN):
                 self.load_stage(self.stage_idx)
+                self.play_bgm(0)
             return
+
+        if self.danger_wait > 0:
+            self.danger_wait -= 1
+            if self.danger_wait == 0:
+                self.play_bgm(2)
 
         for g in self.gears:
             g.update()
