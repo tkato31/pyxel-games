@@ -1,5 +1,6 @@
 import pyxel
 import math
+import random
 
 
 class Gear:
@@ -602,8 +603,13 @@ class App:
         self.on_title = True
         self.current_bgm = -1
         self.danger_wait = 0
-        self.fade_timer = 0
+        self.fade_state = 0
         self.fade_next_stage = -1
+        self.fade_timer = 0
+        self.fade_step_idx = 0
+        self.fade_out_frames = [5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 1]
+        self.fade_in_frames =  [1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
+        self.fade_steps =      [2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64]
 
         self.title_gears = [
             Gear(x=30, y=380, teeth=20, radius=100, speed=0.15),
@@ -748,12 +754,29 @@ class App:
                 self.play_bgm(0)
             return
 
-        if self.fade_timer > 0:
-            self.fade_timer -= 1
-            if self.fade_timer == 0 and self.fade_next_stage >= 0:
+        if self.fade_state > 0:
+            self.fade_timer += 1
+            durations = self.fade_out_frames if self.fade_state == 1 else self.fade_in_frames
+            accum = 0
+            step_idx = 0
+            for i, d in enumerate(durations):
+                accum += d
+                if self.fade_timer <= accum:
+                    step_idx = i
+                    break
+            else:
+                step_idx = len(durations)
+            total_steps = len(self.fade_steps)
+            if self.fade_state == 1 and step_idx >= total_steps:
+                self.fade_state = 2
+                self.fade_timer = 0
                 self.load_stage(self.fade_next_stage)
                 self.play_bgm(0)
                 self.fade_next_stage = -1
+            elif self.fade_state == 2 and step_idx >= total_steps:
+                self.fade_state = 0
+                self.fade_timer = 0
+            self.fade_step_idx = min(step_idx, total_steps - 1)
             return
 
         if self.intro_timer > 0:
@@ -770,7 +793,8 @@ class App:
 
             if self.clear_timer > 120 and pyxel.btnp(pyxel.KEY_RETURN):
                 if self.stage_idx + 1 < len(STAGES):
-                    self.fade_timer = 30
+                    self.fade_state = 1
+                    self.fade_timer = 0
                     self.fade_next_stage = self.stage_idx + 1
                 else:
                     self.all_clear = True
@@ -917,10 +941,19 @@ class App:
 
     def draw(self):
         pyxel.cls(0)
+        self.draw_scene()
+        if self.fade_state > 0:
+            step_idx = self.fade_step_idx
+            if self.fade_state == 1:
+                bs = self.fade_steps[step_idx]
+            else:
+                bs = self.fade_steps[len(self.fade_steps) - 1 - step_idx]
+            for y in range(0, 384, bs):
+                for x in range(0, 512, bs):
+                    col = pyxel.pget(min(x + bs // 2, 511), min(y + bs // 2, 383))
+                    pyxel.rect(x, y, bs, bs, col)
 
-        if self.fade_timer > 0:
-            return
-
+    def draw_scene(self):
         if self.on_title:
             for g in self.title_gears:
                 g.draw(1)
@@ -996,6 +1029,7 @@ class App:
             msg2 = "PRESS ENTER TO RETRY"
             pyxel.text((512 - len(msg1) * 4) // 2, by + 10, msg1, 8)
             pyxel.text((512 - len(msg2) * 4) // 2, by + 26, msg2, 7)
+
 
 
 App()
