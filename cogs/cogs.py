@@ -70,7 +70,7 @@ class Slot:
     def draw(self, active=False):
         if self.gear:
             return
-        r = 12
+        r = 18
         if active:
             blink = (pyxel.frame_count // 15) % 2
             col = 5 if blink else 6
@@ -78,6 +78,7 @@ class Slot:
             col = 1
         pyxel.circb(self.x, self.y, r, col)
         pyxel.circb(self.x, self.y, r + 1, col)
+        pyxel.circb(self.x, self.y, r + 2, col)
         pyxel.text(self.x - 2, self.y - 3, "?", col)
 
 
@@ -128,7 +129,7 @@ def find_neighbor(slot, gears):
         dx = slot.x - g.x
         dy = slot.y - g.y
         dist = math.sqrt(dx * dx + dy * dy)
-        if dist < g.outer_radius() + 60 and dist < best_dist:
+        if dist < g.outer_radius() + 100 and dist < best_dist:
             best = g
             best_dist = dist
     return best
@@ -144,7 +145,7 @@ def find_all_neighbors(slot, gears, slot_radius=None):
             dx = slot.x - g.x
             dy = slot.y - g.y
             dist = math.sqrt(dx * dx + dy * dy)
-            if dist < g.outer_radius() + 60:
+            if dist < g.outer_radius() + 100:
                 neighbors.append(g)
     return neighbors
 
@@ -155,92 +156,94 @@ def mesh_dist(r1, r2):
     return r1 + r2 + max(tl1, tl2) + 2
 
 
-# S1: [8r20] - [12r16]
-# S2: [8r20] - [12r16] - [8r14]
-# S3: [10r16] with [8r14] below and [12r16] left
-# S4: [8r16] - [10r14] - [8r12] - [12r16]
-# S5: [10r16] with [8r12] left, [12r16] right, [6r10] below
+# module=4: radius = teeth * 2
+# XL: 20t r=40  L: 16t r=32  M: 12t r=24  S: 8t r=16  XS: 6t r=12
+# dummy: 10t r=20, 14t r=28
+def gr(teeth):
+    return teeth * 2
+
+
 STAGES = [
     {
         "name": "STAGE 1",
         "actions": 2,
         "gears": [
-            {"x": 100, "y": 100, "teeth": 8, "radius": 20, "speed": 0.8},
+            {"x": 160, "y": 140, "teeth": 16, "radius": gr(16), "speed": 0.5},
         ],
         "slots": [
-            {"x": 100 + mesh_dist(20, 16), "y": 100, "answer": 12},
+            {"x": 160 + mesh_dist(gr(16), gr(12)), "y": 140, "answer": 12},
         ],
         "hand": [
-            {"teeth": 12, "radius": 16},
-            {"teeth": 10, "radius": 15},
+            {"teeth": 12, "radius": gr(12)},
+            {"teeth": 10, "radius": gr(10)},
         ],
     },
     {
         "name": "STAGE 2",
         "actions": 4,
         "gears": [
-            {"x": 60, "y": 100, "teeth": 8, "radius": 20, "speed": 0.8},
+            {"x": 80, "y": 140, "teeth": 20, "radius": gr(20), "speed": 0.4},
         ],
         "slots": [
-            {"x": 60 + mesh_dist(20, 16), "y": 100, "answer": 12},
-            {"x": 60 + mesh_dist(20, 16) + mesh_dist(16, 14), "y": 100, "answer": 8},
+            {"x": 80 + mesh_dist(gr(20), gr(12)), "y": 140, "answer": 12},
+            {"x": 80 + mesh_dist(gr(20), gr(12)) + mesh_dist(gr(12), gr(8)), "y": 140, "answer": 8},
         ],
         "hand": [
-            {"teeth": 12, "radius": 16},
-            {"teeth": 8, "radius": 14},
-            {"teeth": 10, "radius": 15},
+            {"teeth": 12, "radius": gr(12)},
+            {"teeth": 8, "radius": gr(8)},
+            {"teeth": 10, "radius": gr(10)},
         ],
     },
     {
         "name": "STAGE 3",
         "actions": 4,
         "gears": [
-            {"x": 160, "y": 55, "teeth": 10, "radius": 16, "speed": 0.7},
+            {"x": 256, "y": 80, "teeth": 16, "radius": gr(16), "speed": 0.5},
         ],
         "slots": [
-            {"x": 160, "y": 55 + mesh_dist(16, 14), "answer": 8},
-            {"x": 160 - mesh_dist(16, 16), "y": 55, "answer": 12},
+            {"x": 256, "y": 80 + mesh_dist(gr(16), gr(8)), "answer": 8},
+            {"x": 256 - mesh_dist(gr(16), gr(20)), "y": 80, "answer": 20},
         ],
         "hand": [
-            {"teeth": 8, "radius": 14},
-            {"teeth": 12, "radius": 16},
-            {"teeth": 6, "radius": 12},
+            {"teeth": 8, "radius": gr(8)},
+            {"teeth": 20, "radius": gr(20)},
+            {"teeth": 14, "radius": gr(14)},
         ],
     },
     {
         "name": "STAGE 4",
         "actions": 5,
         "gears": [
-            {"x": 35, "y": 90, "teeth": 8, "radius": 16, "speed": 0.8},
+            {"x": 50, "y": 140, "teeth": 6, "radius": gr(6), "speed": 1.2},
         ],
         "slots": [
-            {"x": 35 + mesh_dist(16, 14), "y": 90, "answer": 10},
-            {"x": 35 + mesh_dist(16, 14) + mesh_dist(14, 12), "y": 90, "answer": 8},
-            {"x": 35 + mesh_dist(16, 14) + mesh_dist(14, 12) + mesh_dist(12, 16), "y": 90, "answer": 12},
+            {"x": 50 + mesh_dist(gr(6), gr(12)), "y": 140, "answer": 12},
+            {"x": 50 + mesh_dist(gr(6), gr(12)) + mesh_dist(gr(12), gr(8)), "y": 140, "answer": 8},
+            {"x": 50 + mesh_dist(gr(6), gr(12)) + mesh_dist(gr(12), gr(8)) + mesh_dist(gr(8), gr(20)), "y": 140, "answer": 20},
         ],
         "hand": [
-            {"teeth": 10, "radius": 14},
-            {"teeth": 8, "radius": 12},
-            {"teeth": 12, "radius": 16},
-            {"teeth": 6, "radius": 10},
+            {"teeth": 12, "radius": gr(12)},
+            {"teeth": 8, "radius": gr(8)},
+            {"teeth": 20, "radius": gr(20)},
+            {"teeth": 14, "radius": gr(14)},
         ],
     },
     {
         "name": "STAGE 5",
-        "actions": 5,
+        "actions": 6,
         "gears": [
-            {"x": 160, "y": 45, "teeth": 10, "radius": 16, "speed": 0.6},
+            {"x": 256, "y": 70, "teeth": 16, "radius": gr(16), "speed": 0.5},
         ],
         "slots": [
-            {"x": 160 - mesh_dist(16, 12), "y": 45, "answer": 8},
-            {"x": 160 + mesh_dist(16, 16), "y": 45, "answer": 12},
-            {"x": 160, "y": 45 + mesh_dist(16, 10), "answer": 6},
+            {"x": 256 - mesh_dist(gr(16), gr(6)), "y": 70, "answer": 6},
+            {"x": 256 + mesh_dist(gr(16), gr(20)), "y": 70, "answer": 20},
+            {"x": 256, "y": 70 + mesh_dist(gr(16), gr(12)), "answer": 12},
         ],
         "hand": [
-            {"teeth": 8, "radius": 12},
-            {"teeth": 12, "radius": 16},
-            {"teeth": 6, "radius": 10},
-            {"teeth": 10, "radius": 14},
+            {"teeth": 6, "radius": gr(6)},
+            {"teeth": 20, "radius": gr(20)},
+            {"teeth": 12, "radius": gr(12)},
+            {"teeth": 10, "radius": gr(10)},
         ],
     },
 ]
@@ -291,12 +294,140 @@ def start_bgm():
     pyxel.playm(0, loop=True)
 
 
+FONT8 = {
+    "S": [
+        "  ####  ",
+        " #    # ",
+        " #      ",
+        "  ####  ",
+        "      # ",
+        " #    # ",
+        "  ####  ",
+        "        ",
+    ],
+    "T": [
+        " ###### ",
+        "   ##   ",
+        "   ##   ",
+        "   ##   ",
+        "   ##   ",
+        "   ##   ",
+        "   ##   ",
+        "        ",
+    ],
+    "A": [
+        "  ####  ",
+        " #    # ",
+        " #    # ",
+        " ###### ",
+        " #    # ",
+        " #    # ",
+        " #    # ",
+        "        ",
+    ],
+    "G": [
+        "  ####  ",
+        " #    # ",
+        " #      ",
+        " #  ### ",
+        " #    # ",
+        " #    # ",
+        "  ####  ",
+        "        ",
+    ],
+    "E": [
+        " ###### ",
+        " #      ",
+        " #      ",
+        " ####   ",
+        " #      ",
+        " #      ",
+        " ###### ",
+        "        ",
+    ],
+    " ": [
+        "        ",
+        "        ",
+        "        ",
+        "        ",
+        "        ",
+        "        ",
+        "        ",
+        "        ",
+    ],
+    "1": [
+        "   ##   ",
+        "  ###   ",
+        "   ##   ",
+        "   ##   ",
+        "   ##   ",
+        "   ##   ",
+        " ###### ",
+        "        ",
+    ],
+    "2": [
+        "  ####  ",
+        " #    # ",
+        "      # ",
+        "   ###  ",
+        "  #     ",
+        " #      ",
+        " ###### ",
+        "        ",
+    ],
+    "3": [
+        "  ####  ",
+        " #    # ",
+        "      # ",
+        "   ###  ",
+        "      # ",
+        " #    # ",
+        "  ####  ",
+        "        ",
+    ],
+    "4": [
+        " #    # ",
+        " #    # ",
+        " #    # ",
+        " ###### ",
+        "      # ",
+        "      # ",
+        "      # ",
+        "        ",
+    ],
+    "5": [
+        " ###### ",
+        " #      ",
+        " #      ",
+        " #####  ",
+        "      # ",
+        " #    # ",
+        "  ####  ",
+        "        ",
+    ],
+}
+
+
+def draw_text8(x, y, text, col, scale=2):
+    cx = x
+    for ch in text:
+        glyph = FONT8.get(ch)
+        if glyph:
+            for row in range(8):
+                for c in range(8):
+                    if glyph[row][c] == "#":
+                        px = cx + c * scale
+                        py = y + row * scale
+                        pyxel.rect(px, py, scale, scale, col)
+        cx += 9 * scale
+
+
 GEAR_COLORS = [13, 6, 11, 14, 12, 9, 3]
 
 
 class App:
     def __init__(self):
-        pyxel.init(320, 240, title="COGS")
+        pyxel.init(512, 384, title="COGS")
         pyxel.colors[0] = 0x1C2833
         pyxel.mouse(True)
         setup_sounds()
@@ -327,7 +458,7 @@ class App:
         self.selected_hand = None
         self.message = ""
         self.message_timer = 0
-        self.intro_timer = 60
+        self.intro_timer = 120
         self.playing = False
         self.cleared = False
         self.clear_timer = 0
@@ -342,11 +473,11 @@ class App:
         for sd in stage["slots"]:
             self.slots.append(Slot(sd["x"], sd["y"], sd["answer"]))
 
-        self.hand_start_x = 40
-        self.hand_spacing = 70
+        self.hand_start_x = 70
+        self.hand_spacing = 100
         for i, hd in enumerate(stage["hand"]):
             x = self.hand_start_x + i * self.hand_spacing
-            self.hand.append(HandGear(x, 210, hd["teeth"], hd["radius"], hand_index=i))
+            self.hand.append(HandGear(x, 335, hd["teeth"], hd["radius"], hand_index=i))
 
     def show_message(self, text, frames=90):
         self.message = text
@@ -504,12 +635,11 @@ class App:
                     changed = True
 
         for s in to_remove:
-            hg = HandGear(0, 210, s.gear.teeth, s.gear.radius, hand_index=s.gear.gear_hand_index)
+            hg = HandGear(0, 335, s.gear.teeth, s.gear.radius, hand_index=s.gear.gear_hand_index)
             hg.x = self.hand_start_x + hg.hand_index * self.hand_spacing
             self.hand.append(hg)
             self.gears.remove(s.gear)
             s.gear = None
-            self.actions_left += 1
 
         self.hand.sort(key=lambda h: h.hand_index)
         self.selected_hand = None
@@ -518,11 +648,12 @@ class App:
     def draw_play_screen(self, stage):
         pyxel.text(4, 4, "COGS", 7)
         pyxel.text(4, 14, stage["name"], 5)
+        act_col = 8 if self.actions_left <= 1 else 7
+        pyxel.text(420, 4, f"ACTIONS: {self.actions_left}", act_col)
 
         if not self.cleared:
-            pyxel.text(4, 24, "SELECT A GEAR, THEN CLICK A SLOT", 5)
-            act_col = 8 if self.actions_left <= 1 else 7
-            pyxel.text(220, 4, f"ACTIONS: {self.actions_left}", act_col)
+            msg = "SELECT A GEAR, THEN CLICK A SLOT"
+            pyxel.text((512 - len(msg) * 4) // 2, 24, msg, 5)
 
         for s in self.slots:
             active = find_neighbor(s, self.gears) is not None
@@ -535,16 +666,16 @@ class App:
                 col = GEAR_COLORS[i % len(GEAR_COLORS)]
             g.draw(col)
 
-        pyxel.rect(0, 185, 320, 240, 1)
-        pyxel.text(4, 188, "HAND:", 7)
+        pyxel.rect(0, 295, 512, 384, 1)
+        pyxel.text(4, 298, "HAND:", 7)
         for h in self.hand:
             h.draw()
 
         if self.message_timer > 0:
             tw = len(self.message) * 4
-            tx = (320 - tw) // 2
+            tx = (512 - tw) // 2
             col = 8 if "MISS" in self.message else 10
-            pyxel.text(tx, 150, self.message, col)
+            pyxel.text(tx, 260, self.message, col)
 
     def draw(self):
         pyxel.cls(0)
@@ -553,36 +684,47 @@ class App:
 
         if self.all_clear:
             pyxel.text(4, 4, "COGS", 7)
-            pyxel.text(100, 100, "ALL STAGES CLEAR!", 10)
-            pyxel.text(90, 116, "THANK YOU FOR PLAYING!", 7)
+            msg1 = "ALL STAGES CLEAR!"
+            msg2 = "THANK YOU FOR PLAYING!"
+            pyxel.text((512 - len(msg1) * 4) // 2, 170, msg1, 10)
+            pyxel.text((512 - len(msg2) * 4) // 2, 186, msg2, 7)
             return
 
         if self.intro_timer > 0:
             name = stage["name"]
-            fade = self.intro_timer / 60.0
             col = 10 if (self.intro_timer // 4) % 2 == 0 else 7
-            tw = len(name) * 8
-            tx = (320 - tw) // 2
-            for i, ch in enumerate(name):
-                pyxel.text(tx + i * 8, 108, ch, col)
-                pyxel.text(tx + i * 8 + 1, 108, ch, col)
-            pyxel.text(108, 124, "GET READY...", 5)
+            scale = 3
+            char_w = 9 * scale
+            tw = len(name) * char_w
+            tx = (512 - tw) // 2
+            ty = 155
+            draw_text8(tx, ty, name, col, scale)
+
+            msg = "GET READY..."
+            pyxel.text((512 - len(msg) * 4) // 2, ty + 8 * scale + 10, msg, 5)
             return
 
         self.draw_play_screen(stage)
 
         if self.cleared:
-            pyxel.text(120, 150, "STAGE CLEAR!", 10)
+            msg1 = "STAGE CLEAR!"
+            pyxel.text((512 - len(msg1) * 4) // 2, 180, msg1, 10)
             if self.clear_timer > 120:
                 if self.stage_idx + 1 < len(STAGES):
-                    pyxel.text(100, 166, "PRESS ENTER FOR NEXT", 7)
+                    msg2 = "PRESS ENTER FOR NEXT"
                 else:
-                    pyxel.text(100, 166, "PRESS ENTER TO FINISH", 7)
+                    msg2 = "PRESS ENTER TO FINISH"
+                pyxel.text((512 - len(msg2) * 4) // 2, 196, msg2, 7)
         elif self.game_over:
-            pyxel.rect(80, 90, 160, 40, 0)
-            pyxel.rectb(80, 90, 160, 40, 8)
-            pyxel.text(120, 98, "GAME OVER", 8)
-            pyxel.text(88, 112, "PRESS ENTER TO RETRY", 7)
+            bw, bh = 180, 45
+            bx = (512 - bw) // 2
+            by = 150
+            pyxel.rect(bx, by, bw, bh, 0)
+            pyxel.rectb(bx, by, bw, bh, 8)
+            msg1 = "GAME OVER"
+            msg2 = "PRESS ENTER TO RETRY"
+            pyxel.text((512 - len(msg1) * 4) // 2, by + 10, msg1, 8)
+            pyxel.text((512 - len(msg2) * 4) // 2, by + 26, msg2, 7)
 
 
 App()
