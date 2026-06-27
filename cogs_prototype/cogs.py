@@ -248,6 +248,20 @@ STAGES = [
             {"teeth": 10, "radius": gr(10)},
         ],
     },
+    {
+        "name": "STAGE 6",
+        "actions": 2,
+        "gears": [
+            {"x": 256, "y": 140, "teeth": 12, "radius": gr(12), "speed": 0.5},
+        ],
+        "slots": [
+            {"x": 256 + mesh_dist(gr(12), gr(8)), "y": 140, "answer": 8},
+        ],
+        "hand": [
+            {"teeth": 8, "radius": gr(8)},
+            {"teeth": 14, "radius": gr(14)},
+        ],
+    },
 ]
 
 
@@ -561,6 +575,16 @@ FONT8 = {
         "  ####  ",
         "        ",
     ],
+    "6": [
+        "  ####  ",
+        " #      ",
+        " #      ",
+        " #####  ",
+        " #    # ",
+        " #    # ",
+        "  ####  ",
+        "        ",
+    ],
 }
 
 
@@ -603,6 +627,12 @@ class App:
         self.on_title = True
         self.current_bgm = -1
         self.danger_wait = 0
+        self.revelation = False
+        self.rev_timer = 0
+        self.rev_phase = 0
+        self.rev_gears = []
+        self.rev_slot = None
+        self.rev_you_placed = False
         self.fade_state = 0
         self.fade_next_stage = -1
         self.fade_timer = 0
@@ -785,6 +815,10 @@ class App:
                 self.playing = True
             return
 
+        if self.revelation:
+            self.update_revelation()
+            return
+
         if self.cleared:
             self.clear_timer += 1
             speed_mult = 1.0 + self.clear_timer * 0.02
@@ -797,8 +831,7 @@ class App:
                     self.fade_timer = 0
                     self.fade_next_stage = self.stage_idx + 1
                 else:
-                    self.all_clear = True
-                    self.play_bgm(3)
+                    self.start_revelation()
             return
 
         if self.game_over:
@@ -884,6 +917,124 @@ class App:
         self.hand.sort(key=lambda h: h.hand_index)
         self.selected_hand = None
         self.game_over = False
+
+    def start_revelation(self):
+        self.revelation = True
+        self.rev_timer = 0
+        self.rev_phase = 0
+        self.rev_you_placed = False
+        self.cleared = False
+        self.play_bgm(1)
+
+        self.rev_gears = []
+        cx, cy = 256, 160
+        specs = [
+            (20, 0.3), (12, -0.5), (16, 0.375), (8, -0.75),
+            (6, 1.0), (12, -0.5), (16, 0.375),
+        ]
+        x = cx - 180
+        for i, (teeth, speed) in enumerate(specs):
+            r = gr(teeth)
+            g = Gear(x=x, y=cy, teeth=teeth, radius=r, speed=speed)
+            self.rev_gears.append(g)
+            if i < len(specs) - 1:
+                next_teeth = specs[i + 1][0]
+                x += mesh_dist(r, gr(next_teeth))
+
+        you_r = gr(10)
+        slot_x = x + mesh_dist(gr(specs[-1][0]), you_r)
+        self.rev_slot = Slot(slot_x, cy, answer_teeth=10)
+        self.rev_you_hand = HandGear(256, 335, teeth=10, radius=you_r, hand_index=0)
+
+    def update_revelation(self):
+        self.rev_timer += 1
+
+        for g in self.rev_gears:
+            g.update()
+
+        if self.rev_phase == 0:
+            if self.rev_timer > 90:
+                self.rev_phase = 1
+                self.rev_timer = 0
+        elif self.rev_phase == 1:
+            if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
+                mx, my = pyxel.mouse_x, pyxel.mouse_y
+                if self.rev_you_hand and self.rev_you_hand.hit(mx, my):
+                    self.rev_you_hand.selected = True
+                elif self.rev_you_hand and self.rev_you_hand.selected:
+                    dx = mx - self.rev_slot.x
+                    dy = my - self.rev_slot.y
+                    if dx * dx + dy * dy <= 30 * 30:
+                        last_gear = self.rev_gears[-1]
+                        speed = calc_mesh_speed(last_gear, 10)
+                        angle = calc_mesh_angle(last_gear, 10)
+                        you_gear = Gear(x=self.rev_slot.x, y=self.rev_slot.y,
+                                        teeth=10, radius=gr(10), speed=speed, angle=angle)
+                        self.rev_gears.append(you_gear)
+                        self.rev_slot.gear = you_gear
+                        self.rev_you_placed = True
+                        self.rev_you_hand = None
+                        self.rev_phase = 2
+                        self.rev_timer = 0
+                        pyxel.play(3, 0)
+        elif self.rev_phase == 2:
+            if self.rev_timer > 180:
+                self.rev_phase = 3
+                self.rev_timer = 0
+        elif self.rev_phase == 3:
+            if self.rev_timer > 120:
+                self.all_clear = True
+                self.revelation = False
+                self.play_bgm(3)
+
+    def draw_revelation(self):
+        for i, g in enumerate(self.rev_gears):
+            col = GEAR_COLORS[i % len(GEAR_COLORS)]
+            if self.rev_you_placed and g is self.rev_gears[-1]:
+                col = 10 if (pyxel.frame_count // 4) % 2 == 0 else 7
+            g.draw(col)
+
+        if not self.rev_you_placed:
+            self.rev_slot.draw(active=True)
+
+        if self.rev_phase == 0:
+            alpha = min(self.rev_timer / 60.0, 1.0)
+            if alpha > 0.3:
+                msg = "...wait."
+                pyxel.text((512 - len(msg) * 4) // 2, 60, msg, 5)
+
+        elif self.rev_phase == 1:
+            pyxel.rect(0, 295, 512, 384, 1)
+            pyxel.text(4, 298, "HandGear:", 7)
+            if self.rev_you_hand:
+                self.rev_you_hand.draw()
+                label = "YOU"
+                hx = self.rev_you_hand.x
+                pyxel.text(hx - len(label) * 2, 298, label, 8)
+
+            if self.rev_you_hand and self.rev_you_hand.selected:
+                mx, my = pyxel.mouse_x, pyxel.mouse_y
+                pyxel.text(mx + 8, my - 4, "YOU", 8)
+                dx = mx - self.rev_slot.x
+                dy = my - self.rev_slot.y
+                detect_r = self.rev_you_hand.radius + self.rev_you_hand.tooth_len + 10
+                if dx * dx + dy * dy <= detect_r * detect_r:
+                    if (pyxel.frame_count // 10) % 3 != 0:
+                        ghost = Gear(self.rev_slot.x, self.rev_slot.y, 10, gr(10))
+                        ghost.draw(1)
+
+        elif self.rev_phase == 2:
+            t = min(self.rev_timer / 120.0, 1.0)
+            if t > 0.3:
+                msg1 = "You are now a cog."
+                pyxel.text((512 - len(msg1) * 4) // 2, 60, msg1, 7)
+            if t > 0.7:
+                msg2 = "The machine keeps turning."
+                pyxel.text((512 - len(msg2) * 4) // 2, 76, msg2, 5)
+
+        elif self.rev_phase == 3:
+            pyxel.text((512 - 18 * 4) // 2, 60, "You are now a cog.", 7)
+            pyxel.text((512 - 26 * 4) // 2, 76, "The machine keeps turning.", 5)
 
     def draw_play_screen(self, stage):
         pyxel.text(4, 4, "COGS", 7)
@@ -982,6 +1133,11 @@ class App:
             if blink:
                 msg = "PRESS ENTER TO START"
                 pyxel.text((512 - len(msg) * 4) // 2, 300, msg, 7)
+            return
+
+        if self.revelation:
+            pyxel.text(4, 4, "COGS", 7)
+            self.draw_revelation()
             return
 
         stage = STAGES[self.stage_idx]

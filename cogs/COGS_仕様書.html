@@ -15,117 +15,73 @@
     --red: #E74C3C;
     --gray: #7F8C8D;
     --border: #34495E;
+    --cyan: #00E5FF;
+    --pink: #FF80AB;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'Segoe UI', 'Meiryo', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.7;
-    padding: 0;
-  }
-  .container { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
-  h1 {
-    font-size: 2.4em;
-    color: var(--accent);
-    border-bottom: 3px solid var(--accent);
-    padding-bottom: 12px;
-    margin-bottom: 8px;
-  }
+  body { font-family: 'Segoe UI','Meiryo',sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+  h1 { font-size: 2.4em; color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 12px; margin-bottom: 8px; }
   .subtitle { color: var(--gray); font-size: 1.1em; margin-bottom: 32px; }
-  h2 {
-    font-size: 1.5em;
-    color: var(--accent2);
-    margin-top: 48px;
-    margin-bottom: 16px;
-    border-left: 4px solid var(--accent2);
-    padding-left: 12px;
-  }
-  h3 {
-    font-size: 1.15em;
-    color: var(--accent);
-    margin-top: 28px;
-    margin-bottom: 10px;
-  }
+  h2 { font-size: 1.5em; color: var(--accent2); margin-top: 48px; margin-bottom: 16px; border-left: 4px solid var(--accent2); padding-left: 12px; }
+  h3 { font-size: 1.15em; color: var(--accent); margin-top: 28px; margin-bottom: 10px; }
   p { margin-bottom: 12px; }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 16px 0;
-    font-size: 0.95em;
-  }
-  th, td {
-    border: 1px solid var(--border);
-    padding: 8px 12px;
-    text-align: left;
-  }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.95em; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
   th { background: var(--bg-light); color: var(--accent); }
   tr:nth-child(even) { background: rgba(255,255,255,0.03); }
-  code {
-    background: var(--bg-light);
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-family: 'Consolas', 'Source Code Pro', monospace;
-    font-size: 0.9em;
-  }
-  pre {
-    background: var(--bg-light);
-    padding: 16px;
-    border-radius: 6px;
-    overflow-x: auto;
-    margin: 12px 0;
-    font-size: 0.9em;
-    line-height: 1.5;
-  }
+  code { background: var(--bg-light); padding: 2px 6px; border-radius: 3px; font-family: 'Consolas','Source Code Pro',monospace; font-size: 0.9em; }
+  pre { background: var(--bg-light); padding: 16px; border-radius: 6px; overflow-x: auto; margin: 12px 0; font-size: 0.9em; line-height: 1.5; }
   pre code { background: none; padding: 0; }
-  .roadmap { margin: 20px 0; }
-  .phase {
-    border: 2px solid var(--border);
-    border-radius: 8px;
-    padding: 20px;
-    margin: 16px 0;
-    position: relative;
-  }
-  .phase.done { border-color: var(--green); }
-  .phase.current { border-color: var(--accent); box-shadow: 0 0 20px rgba(243,156,18,0.15); }
-  .phase.future { border-color: var(--border); opacity: 0.8; }
-  .phase-label {
-    position: absolute;
-    top: -12px;
-    left: 16px;
-    padding: 2px 12px;
-    border-radius: 4px;
-    font-size: 0.8em;
-    font-weight: bold;
-  }
-  .phase.done .phase-label { background: var(--green); color: #000; }
-  .phase.current .phase-label { background: var(--accent); color: #000; }
-  .phase.future .phase-label { background: var(--border); color: var(--text); }
-  .check { color: var(--green); }
-  .uncheck { color: var(--gray); }
-  ul { padding-left: 20px; margin: 8px 0; }
+  ul, ol { padding-left: 20px; margin: 8px 0; }
   li { margin: 4px 0; }
-  .meta {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-    margin: 16px 0;
-    padding: 16px;
-    background: var(--bg-light);
-    border-radius: 8px;
-  }
+  .meta { display: flex; gap: 24px; flex-wrap: wrap; margin: 16px 0; padding: 16px; background: var(--bg-light); border-radius: 8px; }
   .meta-item { display: flex; flex-direction: column; }
   .meta-label { font-size: 0.75em; color: var(--gray); text-transform: uppercase; }
   .meta-value { font-size: 1.1em; color: var(--accent); font-weight: bold; }
-  .toc {
-    background: var(--bg-light);
-    padding: 20px;
-    border-radius: 8px;
-    margin: 24px 0;
-  }
+  .check { color: var(--green); }
+  .uncheck { color: var(--gray); }
+  .phase { border: 2px solid var(--border); border-radius: 8px; padding: 20px; margin: 16px 0; position: relative; }
+  .phase.current { border-color: var(--accent); box-shadow: 0 0 20px rgba(243,156,18,0.15); }
+  .phase.future { border-color: var(--border); opacity: 0.8; }
+  .phase-label { position: absolute; top: -12px; left: 16px; padding: 2px 12px; border-radius: 4px; font-size: 0.8em; font-weight: bold; }
+  .phase.current .phase-label { background: var(--accent); color: #000; }
+  .phase.future .phase-label { background: var(--border); color: var(--text); }
+
+  /* Screen Layout */
+  .screen-layout { background: #0D1117; border: 2px solid var(--accent2); border-radius: 8px; padding: 0; margin: 20px 0; overflow: hidden; font-family: 'Consolas',monospace; }
+  .screen-header { background: #161B22; padding: 8px 16px; display: flex; justify-content: space-between; color: var(--text); font-size: 0.85em; border-bottom: 1px solid var(--border); }
+  .screen-grid { padding: 12px; display: flex; justify-content: center; }
+  .grid-table { border-collapse: collapse; }
+  .grid-table td { width: 36px; height: 36px; border: 1px solid #21262D; text-align: center; font-size: 0.7em; vertical-align: middle; }
+  .grid-table .cell-empty { background: #0D1117; }
+  .grid-table .cell-motor { background: #3D2E00; color: var(--accent); font-weight: bold; }
+  .grid-table .cell-machine-off { background: #3D0000; color: var(--red); font-weight: bold; }
+  .grid-table .cell-machine-on { background: #003D00; color: var(--green); font-weight: bold; }
+  .grid-table .cell-wall { background: #1C1C1C; }
+  .grid-table .cell-gear { background: #1A2332; color: var(--accent2); }
+  .grid-table .cell-fixed { background: #1A1A1A; color: var(--gray); }
+  .grid-table .cell-relay { background: #002A2A; color: var(--cyan); }
+  .grid-table .cell-saboteur { background: #2A0020; color: var(--pink); }
+  .screen-hand { background: #161B22; padding: 10px 16px; border-top: 1px solid var(--border); color: var(--text); font-size: 0.85em; }
+
+  /* Character Cards */
+  .pixel-gallery { display: flex; flex-wrap: wrap; gap: 24px; margin: 20px 0; }
+  .pixel-card { background: var(--bg-light); border-radius: 8px; padding: 16px; text-align: center; min-width: 150px; }
+  .pixel-card h4 { color: var(--accent); margin-bottom: 8px; font-size: 0.95em; }
+  .pixel-card canvas { margin: 8px 0; }
+  .pixel-card .desc { font-size: 0.8em; color: var(--gray); margin-top: 8px; }
+
+  .toc { background: var(--bg-light); padding: 20px; border-radius: 8px; margin: 24px 0; }
   .toc a { color: var(--accent2); text-decoration: none; }
   .toc a:hover { text-decoration: underline; }
   .toc li { margin: 6px 0; }
+
+  .flow-chart { background: var(--bg-light); padding: 20px; border-radius: 8px; margin: 16px 0; text-align: center; }
+  .flow-item { display: inline-block; padding: 8px 16px; margin: 4px; border-radius: 4px; }
+  .flow-item.state { background: var(--border); color: var(--text); }
+  .flow-item.action { color: var(--accent); font-size: 0.85em; }
+  .flow-arrow { color: var(--accent); margin: 0 4px; }
 </style>
 </head>
 <body>
@@ -135,288 +91,475 @@
 <p class="subtitle">足りない歯車を、埋めてください。</p>
 
 <div class="meta">
-  <div class="meta-item"><span class="meta-label">Genre</span><span class="meta-value">Puzzle</span></div>
-  <div class="meta-item"><span class="meta-label">Platform</span><span class="meta-value">Python / Pyxel</span></div>
-  <div class="meta-item"><span class="meta-label">Resolution</span><span class="meta-value">320 x 240</span></div>
-  <div class="meta-item"><span class="meta-label">Last Updated</span><span class="meta-value">2026-06-27</span></div>
+  <div class="meta-item"><span class="meta-label">ジャンル</span><span class="meta-value">動力伝達パズル</span></div>
+  <div class="meta-item"><span class="meta-label">プラットフォーム</span><span class="meta-value">Python / Pyxel</span></div>
+  <div class="meta-item"><span class="meta-label">解像度</span><span class="meta-value">512 x 384</span></div>
+  <div class="meta-item"><span class="meta-label">グリッド</span><span class="meta-value">16 x 10 マス</span></div>
+  <div class="meta-item"><span class="meta-label">最終更新</span><span class="meta-value">2026-06-27</span></div>
 </div>
 
 <nav class="toc">
   <strong>目次</strong>
   <ol>
     <li><a href="#concept">ゲーム概要</a></li>
-    <li><a href="#roadmap">ロードマップ</a></li>
-    <li><a href="#tech">技術仕様</a></li>
-    <li><a href="#gear">歯車オブジェクト</a></li>
-    <li><a href="#mesh">噛み合い判定</a></li>
-    <li><a href="#flow">ゲームフロー</a></li>
+    <li><a href="#layout">画面レイアウト</a></li>
+    <li><a href="#characters">登場キャラクター（ギア）</a></li>
+    <li><a href="#mechanics">ゲームメカニクス</a></li>
+    <li><a href="#difficulty">難易度設計</a></li>
+    <li><a href="#stage-data">ステージデータ構造</a></li>
     <li><a href="#sound">サウンド設計</a></li>
-    <li><a href="#phase2">Phase 2 詳細設計</a></li>
-    <li><a href="#files">関連ファイル</a></li>
+    <li><a href="#flow">画面遷移</a></li>
+    <li><a href="#ui">UI設計</a></li>
+    <li><a href="#inherit">プロトタイプからの継承</a></li>
+    <li><a href="#roadmap">ロードマップ</a></li>
   </ol>
 </nav>
 
-<!-- 1. ゲーム概要 -->
+<!-- 1. Game Concept -->
 <h2 id="concept">1. ゲーム概要</h2>
-
-<h3>コンセプト（二層構造）</h3>
+<p>グリッド（マス目）上に歯車を配置し、<strong>モーター</strong>（動力源）から<strong>機械</strong>（目的地）まで動力を伝えるパズルゲーム。</p>
+<div style="text-align:center; padding:20px; background:var(--bg-light); border-radius:8px; margin:16px 0; font-size:1.2em;">
+  <span style="color:var(--accent);">[モーター A]</span>
+  <span style="color:var(--gray);"> &rarr; 歯車を配置 &rarr; </span>
+  <span style="color:var(--green);">[機械 B]</span>
+</div>
 <table>
   <tr><th>層</th><th>内容</th></tr>
-  <tr><td>表の顔</td><td>歯車の空きを埋めるパズルゲーム。歯の数・回転方向・速度比を考えて正しい歯車を配置する</td></tr>
-  <tr><td>裏の顔</td><td>プレイヤー自身がいつの間にか歯車のひとつになっている。気づいた後の感情はプレイヤーに委ねる</td></tr>
+  <tr><td>表の顔</td><td>動力伝達パズル。歯車をつないで機械を動かす達成感</td></tr>
+  <tr><td>裏の顔</td><td>プレイヤー自身がいつの間にか歯車のひとつになっている</td></tr>
 </table>
 
-<h3>3段階構造</h3>
+<!-- 2. Screen Layout -->
+<h2 id="layout">2. 画面レイアウト</h2>
+
+<div class="screen-layout">
+  <div class="screen-header">
+    <span><strong>COGS</strong> &nbsp; STAGE 4</span>
+    <span>GEARS: 5 &nbsp; ACTIONS: 8</span>
+  </div>
+  <div class="screen-grid">
+    <table class="grid-table">
+      <tr>
+        <td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td>
+      </tr>
+      <tr>
+        <td class="cell-empty"></td><td class="cell-motor">M</td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-wall">&#9608;</td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td>
+      </tr>
+      <tr>
+        <td class="cell-empty"></td><td class="cell-gear">&#9881;</td><td class="cell-gear">&#9881;</td><td class="cell-gear">&#9881;</td><td class="cell-wall">&#9608;</td><td class="cell-empty"></td><td class="cell-fixed">&#128274;</td><td class="cell-gear">&#9881;</td><td class="cell-gear">&#9881;</td><td class="cell-machine-on">GO</td><td class="cell-empty"></td><td class="cell-empty"></td>
+      </tr>
+      <tr>
+        <td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-gear">&#9881;</td><td class="cell-wall">&#9608;</td><td class="cell-relay">&#9900;</td><td class="cell-gear">&#9881;</td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td>
+      </tr>
+      <tr>
+        <td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-gear">&#9881;</td><td class="cell-gear">&#9881;</td><td class="cell-gear">&#9881;</td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-machine-off">STOP</td><td class="cell-empty"></td>
+      </tr>
+      <tr>
+        <td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-saboteur">&#128295;</td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td><td class="cell-empty"></td>
+      </tr>
+    </table>
+  </div>
+  <div class="screen-hand">
+    HandGear: &nbsp;
+    <span style="color:var(--accent2);">&#9881; 通常 x3</span> &nbsp;&nbsp;
+    <span style="color:var(--cyan);">&#9900; 中継 x2</span>
+  </div>
+</div>
+
 <table>
-  <tr><th>フェーズ</th><th>プレイヤーの立場</th><th>体験</th></tr>
-  <tr><td>序盤</td><td>機械を修理する人</td><td>シンプルな作業感。自分は外側にいる</td></tr>
-  <tr><td>中盤</td><td>機械の中にいる人</td><td>いつの間にか自分のポジションが固定されている</td></tr>
-  <tr><td>終盤</td><td>代替が来る</td><td>自分の歯車の空きに別の誰かが埋めにくる。気づきの瞬間</td></tr>
+  <tr><th>エリア</th><th>位置</th><th>サイズ</th><th>内容</th></tr>
+  <tr><td>ヘッダー</td><td>上部</td><td>512x24</td><td>ステージ名、残り歯車数、アクション数</td></tr>
+  <tr><td>グリッド</td><td>中央</td><td>448x280 (16x10)</td><td>パズル盤面。1マス28x28px</td></tr>
+  <tr><td>HandGear</td><td>下部</td><td>512x80</td><td>配置可能な歯車の一覧</td></tr>
 </table>
 
-<!-- 2. ロードマップ -->
-<h2 id="roadmap">2. ロードマップ</h2>
+<!-- 3. Characters -->
+<h2 id="characters">3. 登場キャラクター（ギア）</h2>
 
-<div class="roadmap">
+<div class="pixel-gallery">
 
-<div class="phase done">
-  <span class="phase-label">COMPLETE</span>
-  <h3>Phase 1: プロトタイプ</h3>
-  <ul>
-    <li><span class="check">&#10003;</span> 歯車の描画と回転アニメーション</li>
-    <li><span class="check">&#10003;</span> 歯の数による噛み合い判定ロジック</li>
-    <li><span class="check">&#10003;</span> 手持ち歯車から選んで配置する操作</li>
-    <li><span class="check">&#10003;</span> 全噛み合い成功でクリア演出（加速＋点滅）</li>
-    <li><span class="check">&#10003;</span> 5ステージ（段階的に難易度上昇）</li>
-    <li><span class="check">&#10003;</span> SE（配置成功・ミス・クリア）</li>
-  </ul>
-</div>
+  <div class="pixel-card">
+    <h4>通常ギア</h4>
+    <canvas id="cv-normal" width="100" height="100"></canvas>
+    <div class="desc">歯数: 8 / 色: 白 (7)<br>標準歯車。動力を伝達する。</div>
+  </div>
 
-<div class="phase current">
-  <span class="phase-label">NOW</span>
-  <h3>Phase 2: ブラッシュアップ</h3>
-  <p><strong>ビジュアル</strong></p>
-  <ul>
-    <li><span class="uncheck">&#9744;</span> 高解像度化によるリアルで美しい歯車描画</li>
-    <li><span class="uncheck">&#9744;</span> 配置成功時に歯車が一瞬光る演出</li>
-    <li><span class="uncheck">&#9744;</span> 選択中の歯車がスロット上でゴースト表示</li>
-    <li><span class="uncheck">&#9744;</span> ステージ間トランジション（暗転→フェードイン）</li>
-    <li><span class="uncheck">&#9744;</span> ステージ開始時の名前表示演出</li>
-  </ul>
-  <p><strong>操作・UX</strong></p>
-  <ul>
-    <li><span class="uncheck">&#9744;</span> 配置済み歯車を外して置き直せる機能</li>
-    <li><span class="uncheck">&#9744;</span> 選択中の歯車をマウスカーソルに追従表示</li>
-  </ul>
-  <p><strong>サウンド</strong></p>
-  <ul>
-    <li><span class="uncheck">&#9744;</span> BGM（ch0〜2で規則的な機械音ループ）</li>
-    <li><span class="uncheck">&#9744;</span> ミスSEの調整・改善</li>
-  </ul>
-</div>
+  <div class="pixel-card">
+    <h4>中継ギア</h4>
+    <canvas id="cv-relay" width="100" height="100"></canvas>
+    <div class="desc">歯数: 6 / 色: シアン (12)<br>小型。回転方向を反転させる。</div>
+  </div>
 
-<div class="phase future">
-  <span class="phase-label">NEXT</span>
-  <h3>Phase 3: 演出・ストーリー</h3>
-  <ul>
-    <li><span class="uncheck">&#9744;</span> リアルタイムで空きが発生するモード</li>
-    <li><span class="uncheck">&#9744;</span> オフィス環境音が徐々にBGMに混入する演出</li>
-    <li><span class="uncheck">&#9744;</span> 「立場の逆転」ステージ</li>
-    <li><span class="uncheck">&#9744;</span> エンディング演出</li>
-  </ul>
-</div>
+  <div class="pixel-card">
+    <h4>固定ギア</h4>
+    <canvas id="cv-fixed" width="100" height="100"></canvas>
+    <div class="desc">色: 灰色 (13)<br>移動不可。ルート制約。</div>
+  </div>
 
-<div class="phase future">
-  <span class="phase-label">LATER</span>
-  <h3>Phase 4: ゲーム性強化</h3>
-  <ul>
-    <li><span class="uncheck">&#9744;</span> スコア・タイムアタック機能</li>
-    <li><span class="uncheck">&#9744;</span> ステージ追加（10〜15ステージ）</li>
-    <li><span class="uncheck">&#9744;</span> 難易度カーブの調整</li>
-  </ul>
-</div>
+  <div class="pixel-card">
+    <h4>モーター</h4>
+    <canvas id="cv-motor" width="100" height="100"></canvas>
+    <div class="desc">色: 黄色 (10)<br>動力源。常に回転。</div>
+  </div>
+
+  <div class="pixel-card">
+    <h4>機械（未稼働）</h4>
+    <canvas id="cv-machine-off" width="100" height="100"></canvas>
+    <div class="desc">色: 赤 (8)<br>目的地。動力が必要。</div>
+  </div>
+
+  <div class="pixel-card">
+    <h4>機械（稼働中）</h4>
+    <canvas id="cv-machine-on" width="100" height="100"></canvas>
+    <div class="desc">色: 緑 (11)<br>稼働中！動力を受信。</div>
+  </div>
+
+  <div class="pixel-card">
+    <h4>お邪魔キャラ</h4>
+    <canvas id="cv-saboteur" width="100" height="100"></canvas>
+    <div class="desc">色: ピンク (14)<br>配置済み歯車を外す！</div>
+  </div>
 
 </div>
 
-<!-- 3. 技術仕様 -->
-<h2 id="tech">3. 技術仕様</h2>
+<script>
+function drawGear(canvasId, cx, cy, teeth, radius, col, spokeCol, holeCol) {
+  const cv = document.getElementById(canvasId);
+  const ctx = cv.getContext('2d');
+  const toothLen = Math.max(3, radius / 3);
+  const baseHalf = Math.PI / teeth * 0.7;
+  const tipHalf = Math.PI / teeth * 0.4;
+  const angle = 0;
 
-<h3>画面</h3>
+  for (let i = 0; i < teeth; i++) {
+    const a = angle + 2 * Math.PI * i / teeth;
+    const bl = a - baseHalf, br = a + baseHalf;
+    const tl = a - tipHalf, tr = a + tipHalf;
+    const rIn = radius, rOut = radius + toothLen;
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(bl)*rIn, cy + Math.sin(bl)*rIn);
+    ctx.lineTo(cx + Math.cos(tl)*rOut, cy + Math.sin(tl)*rOut);
+    ctx.lineTo(cx + Math.cos(tr)*rOut, cy + Math.sin(tr)*rOut);
+    ctx.lineTo(cx + Math.cos(br)*rIn, cy + Math.sin(br)*rIn);
+    ctx.closePath();
+    ctx.fillStyle = col;
+    ctx.fill();
+  }
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI*2);
+  ctx.fillStyle = col;
+  ctx.fill();
+
+  const nSpokes = 4;
+  for (let i = 0; i < nSpokes; i++) {
+    const sa = angle + 2 * Math.PI * i / nSpokes;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(sa)*(radius+toothLen), cy + Math.sin(sa)*(radius+toothLen));
+    ctx.strokeStyle = spokeCol;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  const holeR = Math.max(2, radius / 3);
+  ctx.beginPath();
+  ctx.arc(cx, cy, holeR, 0, Math.PI*2);
+  ctx.fillStyle = spokeCol;
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(cx, cy, holeR, 0, Math.PI*2);
+  ctx.strokeStyle = col;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(cx, cy, 2, 0, Math.PI*2);
+  ctx.fillStyle = col;
+  ctx.fill();
+}
+
+function drawMotor(canvasId) {
+  const cv = document.getElementById(canvasId);
+  const ctx = cv.getContext('2d');
+  const col = '#F39C12';
+  const dark = '#D68910';
+  ctx.fillStyle = dark;
+  ctx.fillRect(20, 15, 60, 50);
+  ctx.fillStyle = col;
+  ctx.fillRect(23, 18, 54, 44);
+  ctx.strokeStyle = dark;
+  ctx.lineWidth = 2;
+  for (let y = 25; y < 55; y += 8) {
+    ctx.beginPath();
+    ctx.moveTo(28, y);
+    ctx.lineTo(72, y);
+    ctx.stroke();
+  }
+  ctx.fillStyle = dark;
+  ctx.fillRect(35, 65, 8, 15);
+  ctx.fillRect(57, 65, 8, 15);
+  ctx.fillStyle = col;
+  ctx.fillRect(30, 78, 40, 6);
+  ctx.fillStyle = '#F1C40F';
+  ctx.beginPath();
+  ctx.moveTo(50, 22);
+  ctx.lineTo(46, 35);
+  ctx.lineTo(52, 33);
+  ctx.lineTo(48, 48);
+  ctx.lineTo(56, 30);
+  ctx.lineTo(50, 32);
+  ctx.lineTo(54, 22);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawMachine(canvasId, active) {
+  const cv = document.getElementById(canvasId);
+  const ctx = cv.getContext('2d');
+  const col = active ? '#2ECC71' : '#E74C3C';
+  const dark = active ? '#1E8449' : '#922B21';
+  const px = 4;
+  const data = [
+    "...............",
+    ".1111111111111.",
+    ".1...........1.",
+    ".1.11.....11.1.",
+    ".1.111...111.1.",
+    ".1.1.11.11.1.1.",
+    ".1.1..111..1.1.",
+    ".1.1...1...1.1.",
+    ".1.1.......1.1.",
+    ".1.1.......1.1.",
+    ".1...........1.",
+    ".1.222222222.1.",
+    ".1.222222222.1.",
+    ".1111111111111.",
+    "...............",
+  ];
+  for (let r = 0; r < data.length; r++) {
+    for (let c = 0; c < data[r].length; c++) {
+      const ch = data[r][c];
+      if (ch === '1') { ctx.fillStyle = col; ctx.fillRect(c*px+10, r*px+10, px, px); }
+      else if (ch === '2') { ctx.fillStyle = dark; ctx.fillRect(c*px+10, r*px+10, px, px); }
+    }
+  }
+}
+
+function drawSaboteur(canvasId) {
+  const cv = document.getElementById(canvasId);
+  const ctx = cv.getContext('2d');
+  const col = '#FF80AB';
+  const face = '#F48FB1';
+  ctx.fillStyle = face;
+  ctx.beginPath(); ctx.arc(50, 25, 14, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = col;
+  ctx.fillRect(38, 38, 24, 28);
+  ctx.fillRect(32, 42, 8, 20);
+  ctx.fillRect(60, 42, 8, 20);
+  ctx.fillRect(40, 66, 8, 18);
+  ctx.fillRect(52, 66, 8, 18);
+  ctx.fillStyle = '#BDC3C7';
+  ctx.fillRect(64, 38, 4, 24);
+  ctx.fillRect(60, 36, 12, 4);
+  ctx.fillRect(60, 30, 4, 10);
+  ctx.fillRect(72, 30, 4, 10);
+  ctx.fillRect(60, 28, 16, 4);
+}
+
+drawGear('cv-normal', 50, 50, 8, 28, '#BDC3C7', '#1C2833', '#1C2833');
+drawGear('cv-relay', 50, 50, 6, 22, '#00BCD4', '#1C2833', '#1C2833');
+drawGear('cv-fixed', 50, 50, 8, 28, '#566573', '#1C2833', '#1C2833');
+drawMotor('cv-motor');
+drawMachine('cv-machine-off', false);
+drawMachine('cv-machine-on', true);
+drawSaboteur('cv-saboteur');
+</script>
+
+<!-- 4. Game Mechanics -->
+<h2 id="mechanics">4. ゲームメカニクス</h2>
+
+<h3>4.1 動力伝達ルール</h3>
+<ul>
+  <li>歯車は上下左右に隣接する歯車と噛み合う（斜めは不可）</li>
+  <li>噛み合った歯車は逆方向に回転する</li>
+  <li>モーターから連鎖的に動力が伝わる</li>
+  <li>全ての機械が稼働状態になればクリア</li>
+</ul>
+
+<h3>4.2 配置ルール</h3>
+<ul>
+  <li>HandGearから歯車を選択し、グリッドの空きマスに配置</li>
+  <li>壁、モーター、機械、固定ギアのマスには配置不可</li>
+  <li>配置するとアクションを1消費</li>
+  <li>右クリックで配置済み歯車をHandGearに戻す（アクション非消費）</li>
+</ul>
+
+<h3>4.3 速度計算式</h3>
+<pre><code>speed_b = -speed_a * (teeth_a / teeth_b)</code></pre>
+
+<h3>4.4 動力チェーン</h3>
+<ol>
+  <li>モーターが回転開始</li>
+  <li>隣接する歯車が逆方向に回転</li>
+  <li>連鎖的に伝播</li>
+  <li>機械に隣接する歯車が回転していれば機械が稼働</li>
+</ol>
+<p>孤立した歯車（モーターからの連鎖が届かない）は回転しない。</p>
+
+<h2 id="difficulty">5. 難易度設計</h2>
 <table>
-  <tr><th>項目</th><th>現在値</th><th>備考</th></tr>
-  <tr><td>解像度</td><td>320 x 240</td><td>Phase 2で拡大予定</td></tr>
-  <tr><td>カラー</td><td>Pyxel 16色</td><td>カスタムパレット使用</td></tr>
-  <tr><td>フレームレート</td><td>30fps</td><td>Pyxelデフォルト</td></tr>
+  <tr><th>レベル</th><th>ステージ</th><th>要素</th><th>説明</th></tr>
+  <tr><td>初級</td><td>1-3</td><td>モーター1→機械1</td><td>直線・L字でつなぐ。歯車は余裕あり</td></tr>
+  <tr><td>中級</td><td>4-6</td><td>壁・障害物あり</td><td>迂回ルートの設計が必要</td></tr>
+  <tr><td>上級</td><td>7-9</td><td>機械が複数</td><td>分岐ルートで同時に動力を伝える</td></tr>
+  <tr><td>高難度</td><td>10-12</td><td>歯車不足＋固定ギア</td><td>最短ルートを見つける最適化パズル</td></tr>
+  <tr><td>最高難度</td><td>13-15</td><td>お邪魔キャラ登場</td><td>妨害を避けるタイミングと配置の戦略</td></tr>
+  <tr><td>最終</td><td>16</td><td>立場の逆転</td><td>プレイヤーが歯車になる演出</td></tr>
 </table>
 
-<h3>カスタムパレット</h3>
-<pre><code>colors[0] = 0x1C2833  (暗い工場背景)</code></pre>
-
-<h3>カラー運用</h3>
-<table>
-  <tr><th>用途</th><th>パレット番号</th></tr>
-  <tr><td>背景</td><td>0（カスタム暗色）</td></tr>
-  <tr><td>歯車（各色）</td><td>13, 6, 11, 14, 12, 9, 3</td></tr>
-  <tr><td>選択中の手持ち</td><td>10（黄色）</td></tr>
-  <tr><td>非選択の手持ち</td><td>7（白）</td></tr>
-  <tr><td>スロット点滅</td><td>5 ↔ 1</td></tr>
-  <tr><td>MISSメッセージ</td><td>8（赤）</td></tr>
-  <tr><td>クリアメッセージ</td><td>10（黄色）</td></tr>
-  <tr><td>スポーク</td><td>0（背景色）</td></tr>
-</table>
-
-<!-- 4. 歯車オブジェクト -->
-<h2 id="gear">4. 歯車オブジェクト</h2>
-
-<h3>Gear クラス</h3>
+<h2 id="stage-data">6. ステージデータ構造</h2>
 <pre><code>{
-    "x": int,          # 中心X座標
-    "y": int,          # 中心Y座標
-    "teeth": int,      # 歯の数
-    "radius": int,     # 本体の半径（px）
-    "angle": float,    # 現在の回転角度（度数法）
-    "speed": float,    # 回転速度（度/フレーム）
-    "fixed": bool,     # True=配置済み
-    "tooth_len": int,  # 歯の長さ = max(3, radius // 3)
+    "name": "STAGE 1",
+    "grid_w": 16, "grid_h": 10,
+    "actions": 10,
+    "motors": [{"col": 1, "row": 4, "speed": 1.0}],
+    "machines": [{"col": 8, "row": 4}],
+    "walls": [{"col": 5, "row": 3}, {"col": 5, "row": 4}],
+    "fixed_gears": [{"col": 3, "row": 4, "teeth": 8}],
+    "saboteurs": [],
+    "hand": [{"teeth": 8, "count": 5}, {"teeth": 6, "count": 2}]
 }</code></pre>
 
-<h3>描画構造</h3>
-<ol>
-  <li><strong>歯（台形）</strong> — 各歯を2つの三角形で描画</li>
-  <li><strong>本体（円）</strong> — 塗りつぶし円</li>
-  <li><strong>スポーク（4本）</strong> — 中心から歯の先端まで貫通する線</li>
-  <li><strong>中心穴</strong> — 背景色の円 ＋ リング ＋ 中心点</li>
-</ol>
-
-<h3>歯の形状パラメータ</h3>
-<pre><code>base_half = pi / teeth * 0.7   (歯の根元の半幅)
-tip_half  = pi / teeth * 0.4   (歯の先端の半幅)</code></pre>
-
-<!-- 5. 噛み合い判定 -->
-<h2 id="mesh">5. 噛み合い判定</h2>
-
-<h3>メッシュ距離</h3>
-<pre><code>def mesh_dist(r1, r2):
-    tl1 = max(3, r1 // 3)
-    tl2 = max(3, r2 // 3)
-    return r1 + r2 + max(tl1, tl2) + 2</code></pre>
-
-<h3>速度比</h3>
-<pre><code>speed_b = -speed_a * (teeth_a / teeth_b)</code></pre>
-<p>隣接する歯車は必ず逆方向に回転。歯数の比率で速度が決まる。</p>
-
-<h3>位相同期</h3>
-<pre><code>def calc_mesh_angle(driver, driven_teeth):
-    step = 360.0 / driven_teeth
-    return driver.angle * (-driver.teeth / driven_teeth) + step / 2</code></pre>
-
-<h3>隣接判定</h3>
-<p>配置済み歯車からの距離が <code>outer_radius + 60</code> 以内の最近傍を探索。隣が見つからない場合は配置不可。</p>
-
-<!-- 6. ゲームフロー -->
-<h2 id="flow">6. ゲームフロー</h2>
-
-<h3>ステージ構成</h3>
-<table>
-  <tr><th>Stage</th><th>固定歯車</th><th>スロット</th><th>手持ち</th><th>ダミー</th><th>特徴</th></tr>
-  <tr><td>1</td><td>8歯 ×1</td><td>1</td><td>2</td><td>1</td><td>チュートリアル</td></tr>
-  <tr><td>2</td><td>8歯 ×1</td><td>2</td><td>3</td><td>1</td><td>直線配置</td></tr>
-  <tr><td>3</td><td>10歯 ×1</td><td>2</td><td>3</td><td>1</td><td>上下＋左右の分岐</td></tr>
-  <tr><td>4</td><td>8歯 ×1</td><td>3</td><td>4</td><td>1</td><td>長い直線チェーン</td></tr>
-  <tr><td>5</td><td>10歯 ×1</td><td>3</td><td>4</td><td>1</td><td>三方向分岐</td></tr>
-</table>
-
-<h3>操作フロー</h3>
-<ol>
-  <li>手持ちエリアから歯車をクリックして選択（黄色ハイライト）</li>
-  <li>空きスロット（?マーク点滅）をクリックして配置を試みる</li>
-  <li>歯数が正解 → 配置成功（「カチッ」SE、回転開始）</li>
-  <li>歯数が不正解 → 「MISS!」表示（赤文字、ガコンSE）</li>
-  <li>全スロット配置完了 → クリア演出</li>
-  <li>ENTERで次ステージへ</li>
-</ol>
-
-<h3>クリア演出</h3>
-<ul>
-  <li>全歯車の回転速度が徐々に加速</li>
-  <li>歯車の色が4フレームごとに黄色と通常色で点滅</li>
-  <li>120フレーム後に「PRESS ENTER FOR NEXT」表示</li>
-</ul>
-
-<!-- 7. サウンド設計 -->
+<!-- 7. Sound -->
 <h2 id="sound">7. サウンド設計</h2>
-
-<h3>実装済み</h3>
+<h3>SE（ch3）</h3>
 <table>
-  <tr><th>ID</th><th>用途</th><th>Ch</th><th>設定</th></tr>
-  <tr><td>sounds[0]</td><td>配置成功</td><td>ch3</td><td><code>"c3e3g3c4", "p", "7654", "n", 6</code></td></tr>
-  <tr><td>sounds[1]</td><td>ミス</td><td>ch3</td><td><code>"f1c1", "n", "76", "n", 8</code></td></tr>
-  <tr><td>sounds[2]</td><td>クリア</td><td>ch3</td><td><code>"c3e3g3c4e4g4", "p", "776655", "n", 5</code></td></tr>
+  <tr><th>用途</th><th>継承元</th></tr>
+  <tr><td>配置成功</td><td>継承: sounds[0]</td></tr>
+  <tr><td>ミス / 配置不可</td><td>継承: sounds[1]</td></tr>
+  <tr><td>ステージクリア</td><td>継承: sounds[2]</td></tr>
+  <tr><td>機械稼働</td><td>新規</td></tr>
+  <tr><td>お邪魔キャラ接近</td><td>新規</td></tr>
+  <tr><td>お邪魔キャラが歯車を外す</td><td>新規</td></tr>
+</table>
+<h3>BGM</h3>
+<table>
+  <tr><th>Music</th><th>用途</th><th>継承元</th></tr>
+  <tr><td>musics[0]</td><td>通常ステージ</td><td>継承</td></tr>
+  <tr><td>musics[1]</td><td>タイトル画面</td><td>継承</td></tr>
+  <tr><td>musics[2]</td><td>警告テンポアップ</td><td>継承</td></tr>
+  <tr><td>musics[3]</td><td>全クリア</td><td>継承</td></tr>
+  <tr><td>musics[4]</td><td>お邪魔キャラ出現ステージ</td><td>新規</td></tr>
 </table>
 
-<h3>Phase 2で追加予定</h3>
+<h2 id="flow">8. 画面遷移</h2>
+<div class="flow-chart">
+  <span class="flow-item state">タイトル画面</span>
+  <span class="flow-arrow">&darr; ENTER</span><br>
+  <span class="flow-item state">ステージ開始演出（8x8フォント）</span>
+  <span class="flow-arrow">&darr; 自動</span><br>
+  <span class="flow-item state">プレイ画面</span>
+  <span class="flow-arrow">&darr; 全機械稼働</span><br>
+  <span class="flow-item state">クリア演出</span>
+  <span class="flow-arrow">&darr; ENTER</span><br>
+  <span class="flow-item state">モザイクフェードトランジション</span>
+  <span class="flow-arrow">&darr;</span><br>
+  <span class="flow-item state">次ステージ</span>
+  <span class="flow-item action">or 立場の逆転 or エンディング</span>
+</div>
+
+<h2 id="ui">9. UI設計</h2>
+<h3>ヘッダー</h3>
+<div style="background:#161B22; padding:10px 16px; border-radius:4px; font-family:monospace; margin:12px 0;">
+  <span style="color:white;">COGS</span> &nbsp;&nbsp;
+  <span style="color:#3498DB;">STAGE 1</span>
+  <span style="float:right;">
+    <span style="color:white;">GEARS: 5</span> &nbsp;&nbsp;
+    <span style="color:#E74C3C;">ACTIONS: 1</span>
+  </span>
+</div>
+
+<h3>グリッド</h3>
+<ul>
+  <li>マス目の境界線を薄く描画（色1）</li>
+  <li>空きマスはホバーで明るくハイライト</li>
+  <li>配置可能マスと不可マスの色分け</li>
+</ul>
+
+<h3>ゴースト表示</h3>
+<ul>
+  <li>HandGear選択中にグリッドマスにマウスを合わせると配置プレビュー</li>
+  <li>配置不可マスでは赤色ゴースト</li>
+</ul>
+
+<h2 id="inherit">10. プロトタイプからの継承</h2>
+<h3>コード継承</h3>
 <table>
-  <tr><th>用途</th><th>Ch</th><th>方針</th></tr>
-  <tr><td>BGM</td><td>ch0〜2</td><td>規則的な機械音ループ</td></tr>
+  <tr><th>要素</th><th>継承内容</th></tr>
+  <tr><td>Gear クラス</td><td>描画（台形歯・スポーク・中心穴）、回転アニメーション</td></tr>
+  <tr><td>噛み合い計算</td><td>calc_mesh_speed, calc_mesh_angle</td></tr>
+  <tr><td>FONT8 / TITLE_FONT</td><td>8x8・12x12 ピクセルフォント</td></tr>
+  <tr><td>サウンド定義</td><td>SE 3種 + BGM 4パターン + 警告フレーズ</td></tr>
+  <tr><td>タイトル画面</td><td>歯車ロゴ・背景アニメーション</td></tr>
+  <tr><td>モザイクフェード</td><td>ピクセル化トランジション（イージング付き）</td></tr>
+  <tr><td>クリア演出</td><td>加速＋点滅</td></tr>
 </table>
 
-<!-- 8. Phase 2 詳細設計 -->
-<h2 id="phase2">8. Phase 2 詳細設計</h2>
-
-<h3>8.1 高解像度化（企画提案）</h3>
-<p><strong>目的：</strong>ドットのガタつきを解消し、よりリアルで美しい歯車を描画する</p>
-<p><strong>アプローチ案：</strong></p>
-<ul>
-  <li>解像度を 320x240 → 480x360 または 640x480 に拡大</li>
-  <li>歯車の半径も比例して拡大（描画ドット数増加で滑らかに）</li>
-  <li>歯の形状パラメータの微調整</li>
-  <li>アンチエイリアス的な中間色による輪郭のなめらかさ向上</li>
-  <li>スポークの太さ（複数ライン描画）の検討</li>
-</ul>
-<p><strong>注意点：</strong></p>
-<ul>
-  <li>Pyxelの最大画面サイズ制約の確認</li>
-  <li>ウィンドウ表示サイズとのバランス</li>
-  <li>歯車サイズ変更時は <code>mesh_dist</code> により自動でスロット位置が再計算される</li>
-</ul>
-
-<h3>8.2 配置成功時の発光演出</h3>
-<p>配置直後の10〜15フレーム、歯車を明るい色（黄色）で描画。フレームカウンタで制御。</p>
-
-<h3>8.3 ゴースト表示（配置プレビュー）</h3>
-<p>手持ち選択中にスロット上にマウスを近づけると、点滅で歯車のシルエットを表示。配置前にサイズ感を確認できる。</p>
-
-<h3>8.4 ステージ開始演出</h3>
-<p>ステージ読み込み時に「STAGE N」を画面中央に大きく表示（2秒間）。フェードアウト後にプレイ開始。</p>
-
-<h3>8.5 ステージ間トランジション</h3>
-<p>クリア後のENTER → 画面が暗転 → 次ステージがフェードイン。</p>
-
-<h3>8.6 やり直し機能</h3>
-<p>配置済み歯車を右クリックで手持ちに戻す。以降の連鎖歯車も同時に外れる。</p>
-
-<h3>8.7 マウス追従</h3>
-<p>選択中の歯車の小さなアイコンをマウスカーソル位置に点滅描画。</p>
-
-<h3>8.8 BGM</h3>
-<ul>
-  <li>ch0: ベースリズム（低音の規則的パルス）</li>
-  <li>ch1: 機械音（金属的な中音域のループ）</li>
-  <li>ch2: アクセント（高音域の短いフレーズ）</li>
-</ul>
-<p>工場の機械が稼働している雰囲気を目指す。</p>
-
-<!-- 9. 関連ファイル -->
-<h2 id="files">9. 関連ファイル</h2>
+<h3>新規実装が必要な要素</h3>
 <table>
-  <tr><th>ファイル</th><th>内容</th></tr>
-  <tr><td><code>cogs.py</code></td><td>メインゲームコード</td></tr>
-  <tr><td><code>CLAUDE.md</code></td><td>Pyxelのルール・開発指針</td></tr>
-  <tr><td><code>COGS_企画書.pptx</code></td><td>ゲーム企画書（全7スライド）</td></tr>
-  <tr><td><code>COGS_引き継ぎ.md</code></td><td>Coworkモードからの引き継ぎ</td></tr>
-  <tr><td><code>COGS_仕様書.md</code></td><td>本ドキュメント（Markdown版）</td></tr>
-  <tr><td><code>COGS_仕様書.html</code></td><td>本ドキュメント（HTML版）</td></tr>
+  <tr><th>要素</th><th>内容</th></tr>
+  <tr><td>グリッドシステム</td><td>マス目の管理、配置判定</td></tr>
+  <tr><td>動力伝達エンジン</td><td>BFS/DFSによるモーターからの連鎖計算</td></tr>
+  <tr><td>機械の稼働判定</td><td>隣接歯車の回転チェック</td></tr>
+  <tr><td>お邪魔キャラAI</td><td>移動パターン、歯車外し</td></tr>
+  <tr><td>ステージデータ</td><td>dict/JSONでステージ定義</td></tr>
 </table>
+
+<h2 id="roadmap">11. ロードマップ</h2>
+
+<div class="phase current">
+  <span class="phase-label">現在地</span>
+  <h3>Phase 1: グリッドパズル基盤</h3>
+  <ul>
+    <li><span class="uncheck">&#9744;</span> グリッドシステム（16x10マス）</li>
+    <li><span class="uncheck">&#9744;</span> マス上への歯車配置・削除</li>
+    <li><span class="uncheck">&#9744;</span> 動力伝達エンジン（モーター→歯車→機械）</li>
+    <li><span class="uncheck">&#9744;</span> 機械の稼働判定・クリア判定</li>
+    <li><span class="uncheck">&#9744;</span> 3ステージ（チュートリアル）</li>
+  </ul>
+</div>
+
+<div class="phase future">
+  <span class="phase-label">次</span>
+  <h3>Phase 2: パズル要素</h3>
+  <ul>
+    <li><span class="uncheck">&#9744;</span> 壁・障害物</li>
+    <li><span class="uncheck">&#9744;</span> 固定ギア</li>
+    <li><span class="uncheck">&#9744;</span> 中継ギア</li>
+    <li><span class="uncheck">&#9744;</span> 複数機械の同時稼働</li>
+    <li><span class="uncheck">&#9744;</span> ステージ 4-9</li>
+  </ul>
+</div>
+
+<div class="phase future">
+  <span class="phase-label">その次</span>
+  <h3>Phase 3: 妨害と戦略</h3>
+  <ul>
+    <li><span class="uncheck">&#9744;</span> お邪魔キャラの実装</li>
+    <li><span class="uncheck">&#9744;</span> お邪魔キャラ用SE</li>
+    <li><span class="uncheck">&#9744;</span> ステージ 10-15</li>
+  </ul>
+</div>
+
+<div class="phase future">
+  <span class="phase-label">最終</span>
+  <h3>Phase 4: ストーリー演出</h3>
+  <ul>
+    <li><span class="uncheck">&#9744;</span> 「立場の逆転」ステージ（Stage 16）</li>
+    <li><span class="uncheck">&#9744;</span> エンディング演出</li>
+    <li><span class="uncheck">&#9744;</span> オフィス環境音のBGM混入</li>
+  </ul>
+</div>
 
 </div>
 </body>
