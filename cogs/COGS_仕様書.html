@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COGS 仕様書</title>
+<style>
+  :root {
+    --bg: #1C2833;
+    --bg-light: #2C3E50;
+    --text: #ECF0F1;
+    --accent: #F39C12;
+    --accent2: #3498DB;
+    --green: #2ECC71;
+    --red: #E74C3C;
+    --gray: #7F8C8D;
+    --border: #34495E;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Meiryo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 0;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+  h1 {
+    font-size: 2.4em;
+    color: var(--accent);
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 12px;
+    margin-bottom: 8px;
+  }
+  .subtitle { color: var(--gray); font-size: 1.1em; margin-bottom: 32px; }
+  h2 {
+    font-size: 1.5em;
+    color: var(--accent2);
+    margin-top: 48px;
+    margin-bottom: 16px;
+    border-left: 4px solid var(--accent2);
+    padding-left: 12px;
+  }
+  h3 {
+    font-size: 1.15em;
+    color: var(--accent);
+    margin-top: 28px;
+    margin-bottom: 10px;
+  }
+  p { margin-bottom: 12px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.95em;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    text-align: left;
+  }
+  th { background: var(--bg-light); color: var(--accent); }
+  tr:nth-child(even) { background: rgba(255,255,255,0.03); }
+  code {
+    background: var(--bg-light);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Source Code Pro', monospace;
+    font-size: 0.9em;
+  }
+  pre {
+    background: var(--bg-light);
+    padding: 16px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 12px 0;
+    font-size: 0.9em;
+    line-height: 1.5;
+  }
+  pre code { background: none; padding: 0; }
+  .roadmap { margin: 20px 0; }
+  .phase {
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 16px 0;
+    position: relative;
+  }
+  .phase.done { border-color: var(--green); }
+  .phase.current { border-color: var(--accent); box-shadow: 0 0 20px rgba(243,156,18,0.15); }
+  .phase.future { border-color: var(--border); opacity: 0.8; }
+  .phase-label {
+    position: absolute;
+    top: -12px;
+    left: 16px;
+    padding: 2px 12px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+  }
+  .phase.done .phase-label { background: var(--green); color: #000; }
+  .phase.current .phase-label { background: var(--accent); color: #000; }
+  .phase.future .phase-label { background: var(--border); color: var(--text); }
+  .check { color: var(--green); }
+  .uncheck { color: var(--gray); }
+  ul { padding-left: 20px; margin: 8px 0; }
+  li { margin: 4px 0; }
+  .meta {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+    padding: 16px;
+    background: var(--bg-light);
+    border-radius: 8px;
+  }
+  .meta-item { display: flex; flex-direction: column; }
+  .meta-label { font-size: 0.75em; color: var(--gray); text-transform: uppercase; }
+  .meta-value { font-size: 1.1em; color: var(--accent); font-weight: bold; }
+  .toc {
+    background: var(--bg-light);
+    padding: 20px;
+    border-radius: 8px;
+    margin: 24px 0;
+  }
+  .toc a { color: var(--accent2); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .toc li { margin: 6px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>COGS</h1>
+<p class="subtitle">足りない歯車を、埋めてください。</p>
+
+<div class="meta">
+  <div class="meta-item"><span class="meta-label">Genre</span><span class="meta-value">Puzzle</span></div>
+  <div class="meta-item"><span class="meta-label">Platform</span><span class="meta-value">Python / Pyxel</span></div>
+  <div class="meta-item"><span class="meta-label">Resolution</span><span class="meta-value">320 x 240</span></div>
+  <div class="meta-item"><span class="meta-label">Last Updated</span><span class="meta-value">2026-06-27</span></div>
+</div>
+
+<nav class="toc">
+  <strong>目次</strong>
+  <ol>
+    <li><a href="#concept">ゲーム概要</a></li>
+    <li><a href="#roadmap">ロードマップ</a></li>
+    <li><a href="#tech">技術仕様</a></li>
+    <li><a href="#gear">歯車オブジェクト</a></li>
+    <li><a href="#mesh">噛み合い判定</a></li>
+    <li><a href="#flow">ゲームフロー</a></li>
+    <li><a href="#sound">サウンド設計</a></li>
+    <li><a href="#phase2">Phase 2 詳細設計</a></li>
+    <li><a href="#files">関連ファイル</a></li>
+  </ol>
+</nav>
+
+<!-- 1. ゲーム概要 -->
+<h2 id="concept">1. ゲーム概要</h2>
+
+<h3>コンセプト（二層構造）</h3>
+<table>
+  <tr><th>層</th><th>内容</th></tr>
+  <tr><td>表の顔</td><td>歯車の空きを埋めるパズルゲーム。歯の数・回転方向・速度比を考えて正しい歯車を配置する</td></tr>
+  <tr><td>裏の顔</td><td>プレイヤー自身がいつの間にか歯車のひとつになっている。気づいた後の感情はプレイヤーに委ねる</td></tr>
+</table>
+
+<h3>3段階構造</h3>
+<table>
+  <tr><th>フェーズ</th><th>プレイヤーの立場</th><th>体験</th></tr>
+  <tr><td>序盤</td><td>機械を修理する人</td><td>シンプルな作業感。自分は外側にいる</td></tr>
+  <tr><td>中盤</td><td>機械の中にいる人</td><td>いつの間にか自分のポジションが固定されている</td></tr>
+  <tr><td>終盤</td><td>代替が来る</td><td>自分の歯車の空きに別の誰かが埋めにくる。気づきの瞬間</td></tr>
+</table>
+
+<!-- 2. ロードマップ -->
+<h2 id="roadmap">2. ロードマップ</h2>
+
+<div class="roadmap">
+
+<div class="phase done">
+  <span class="phase-label">COMPLETE</span>
+  <h3>Phase 1: プロトタイプ</h3>
+  <ul>
+    <li><span class="check">&#10003;</span> 歯車の描画と回転アニメーション</li>
+    <li><span class="check">&#10003;</span> 歯の数による噛み合い判定ロジック</li>
+    <li><span class="check">&#10003;</span> 手持ち歯車から選んで配置する操作</li>
+    <li><span class="check">&#10003;</span> 全噛み合い成功でクリア演出（加速＋点滅）</li>
+    <li><span class="check">&#10003;</span> 5ステージ（段階的に難易度上昇）</li>
+    <li><span class="check">&#10003;</span> SE（配置成功・ミス・クリア）</li>
+  </ul>
+</div>
+
+<div class="phase current">
+  <span class="phase-label">NOW</span>
+  <h3>Phase 2: ブラッシュアップ</h3>
+  <p><strong>ビジュアル</strong></p>
+  <ul>
+    <li><span class="uncheck">&#9744;</span> 高解像度化によるリアルで美しい歯車描画</li>
+    <li><span class="uncheck">&#9744;</span> 配置成功時に歯車が一瞬光る演出</li>
+    <li><span class="uncheck">&#9744;</span> 選択中の歯車がスロット上でゴースト表示</li>
+    <li><span class="uncheck">&#9744;</span> ステージ間トランジション（暗転→フェードイン）</li>
+    <li><span class="uncheck">&#9744;</span> ステージ開始時の名前表示演出</li>
+  </ul>
+  <p><strong>操作・UX</strong></p>
+  <ul>
+    <li><span class="uncheck">&#9744;</span> 配置済み歯車を外して置き直せる機能</li>
+    <li><span class="uncheck">&#9744;</span> 選択中の歯車をマウスカーソルに追従表示</li>
+  </ul>
+  <p><strong>サウンド</strong></p>
+  <ul>
+    <li><span class="uncheck">&#9744;</span> BGM（ch0〜2で規則的な機械音ループ）</li>
+    <li><span class="uncheck">&#9744;</span> ミスSEの調整・改善</li>
+  </ul>
+</div>
+
+<div class="phase future">
+  <span class="phase-label">NEXT</span>
+  <h3>Phase 3: 演出・ストーリー</h3>
+  <ul>
+    <li><span class="uncheck">&#9744;</span> リアルタイムで空きが発生するモード</li>
+    <li><span class="uncheck">&#9744;</span> オフィス環境音が徐々にBGMに混入する演出</li>
+    <li><span class="uncheck">&#9744;</span> 「立場の逆転」ステージ</li>
+    <li><span class="uncheck">&#9744;</span> エンディング演出</li>
+  </ul>
+</div>
+
+<div class="phase future">
+  <span class="phase-label">LATER</span>
+  <h3>Phase 4: ゲーム性強化</h3>
+  <ul>
+    <li><span class="uncheck">&#9744;</span> スコア・タイムアタック機能</li>
+    <li><span class="uncheck">&#9744;</span> ステージ追加（10〜15ステージ）</li>
+    <li><span class="uncheck">&#9744;</span> 難易度カーブの調整</li>
+  </ul>
+</div>
+
+</div>
+
+<!-- 3. 技術仕様 -->
+<h2 id="tech">3. 技術仕様</h2>
+
+<h3>画面</h3>
+<table>
+  <tr><th>項目</th><th>現在値</th><th>備考</th></tr>
+  <tr><td>解像度</td><td>320 x 240</td><td>Phase 2で拡大予定</td></tr>
+  <tr><td>カラー</td><td>Pyxel 16色</td><td>カスタムパレット使用</td></tr>
+  <tr><td>フレームレート</td><td>30fps</td><td>Pyxelデフォルト</td></tr>
+</table>
+
+<h3>カスタムパレット</h3>
+<pre><code>colors[0] = 0x1C2833  (暗い工場背景)</code></pre>
+
+<h3>カラー運用</h3>
+<table>
+  <tr><th>用途</th><th>パレット番号</th></tr>
+  <tr><td>背景</td><td>0（カスタム暗色）</td></tr>
+  <tr><td>歯車（各色）</td><td>13, 6, 11, 14, 12, 9, 3</td></tr>
+  <tr><td>選択中の手持ち</td><td>10（黄色）</td></tr>
+  <tr><td>非選択の手持ち</td><td>7（白）</td></tr>
+  <tr><td>スロット点滅</td><td>5 ↔ 1</td></tr>
+  <tr><td>MISSメッセージ</td><td>8（赤）</td></tr>
+  <tr><td>クリアメッセージ</td><td>10（黄色）</td></tr>
+  <tr><td>スポーク</td><td>0（背景色）</td></tr>
+</table>
+
+<!-- 4. 歯車オブジェクト -->
+<h2 id="gear">4. 歯車オブジェクト</h2>
+
+<h3>Gear クラス</h3>
+<pre><code>{
+    "x": int,          # 中心X座標
+    "y": int,          # 中心Y座標
+    "teeth": int,      # 歯の数
+    "radius": int,     # 本体の半径（px）
+    "angle": float,    # 現在の回転角度（度数法）
+    "speed": float,    # 回転速度（度/フレーム）
+    "fixed": bool,     # True=配置済み
+    "tooth_len": int,  # 歯の長さ = max(3, radius // 3)
+}</code></pre>
+
+<h3>描画構造</h3>
+<ol>
+  <li><strong>歯（台形）</strong> — 各歯を2つの三角形で描画</li>
+  <li><strong>本体（円）</strong> — 塗りつぶし円</li>
+  <li><strong>スポーク（4本）</strong> — 中心から歯の先端まで貫通する線</li>
+  <li><strong>中心穴</strong> — 背景色の円 ＋ リング ＋ 中心点</li>
+</ol>
+
+<h3>歯の形状パラメータ</h3>
+<pre><code>base_half = pi / teeth * 0.7   (歯の根元の半幅)
+tip_half  = pi / teeth * 0.4   (歯の先端の半幅)</code></pre>
+
+<!-- 5. 噛み合い判定 -->
+<h2 id="mesh">5. 噛み合い判定</h2>
+
+<h3>メッシュ距離</h3>
+<pre><code>def mesh_dist(r1, r2):
+    tl1 = max(3, r1 // 3)
+    tl2 = max(3, r2 // 3)
+    return r1 + r2 + max(tl1, tl2) + 2</code></pre>
+
+<h3>速度比</h3>
+<pre><code>speed_b = -speed_a * (teeth_a / teeth_b)</code></pre>
+<p>隣接する歯車は必ず逆方向に回転。歯数の比率で速度が決まる。</p>
+
+<h3>位相同期</h3>
+<pre><code>def calc_mesh_angle(driver, driven_teeth):
+    step = 360.0 / driven_teeth
+    return driver.angle * (-driver.teeth / driven_teeth) + step / 2</code></pre>
+
+<h3>隣接判定</h3>
+<p>配置済み歯車からの距離が <code>outer_radius + 60</code> 以内の最近傍を探索。隣が見つからない場合は配置不可。</p>
+
+<!-- 6. ゲームフロー -->
+<h2 id="flow">6. ゲームフロー</h2>
+
+<h3>ステージ構成</h3>
+<table>
+  <tr><th>Stage</th><th>固定歯車</th><th>スロット</th><th>手持ち</th><th>ダミー</th><th>特徴</th></tr>
+  <tr><td>1</td><td>8歯 ×1</td><td>1</td><td>2</td><td>1</td><td>チュートリアル</td></tr>
+  <tr><td>2</td><td>8歯 ×1</td><td>2</td><td>3</td><td>1</td><td>直線配置</td></tr>
+  <tr><td>3</td><td>10歯 ×1</td><td>2</td><td>3</td><td>1</td><td>上下＋左右の分岐</td></tr>
+  <tr><td>4</td><td>8歯 ×1</td><td>3</td><td>4</td><td>1</td><td>長い直線チェーン</td></tr>
+  <tr><td>5</td><td>10歯 ×1</td><td>3</td><td>4</td><td>1</td><td>三方向分岐</td></tr>
+</table>
+
+<h3>操作フロー</h3>
+<ol>
+  <li>手持ちエリアから歯車をクリックして選択（黄色ハイライト）</li>
+  <li>空きスロット（?マーク点滅）をクリックして配置を試みる</li>
+  <li>歯数が正解 → 配置成功（「カチッ」SE、回転開始）</li>
+  <li>歯数が不正解 → 「MISS!」表示（赤文字、ガコンSE）</li>
+  <li>全スロット配置完了 → クリア演出</li>
+  <li>ENTERで次ステージへ</li>
+</ol>
+
+<h3>クリア演出</h3>
+<ul>
+  <li>全歯車の回転速度が徐々に加速</li>
+  <li>歯車の色が4フレームごとに黄色と通常色で点滅</li>
+  <li>120フレーム後に「PRESS ENTER FOR NEXT」表示</li>
+</ul>
+
+<!-- 7. サウンド設計 -->
+<h2 id="sound">7. サウンド設計</h2>
+
+<h3>実装済み</h3>
+<table>
+  <tr><th>ID</th><th>用途</th><th>Ch</th><th>設定</th></tr>
+  <tr><td>sounds[0]</td><td>配置成功</td><td>ch3</td><td><code>"c3e3g3c4", "p", "7654", "n", 6</code></td></tr>
+  <tr><td>sounds[1]</td><td>ミス</td><td>ch3</td><td><code>"f1c1", "n", "76", "n", 8</code></td></tr>
+  <tr><td>sounds[2]</td><td>クリア</td><td>ch3</td><td><code>"c3e3g3c4e4g4", "p", "776655", "n", 5</code></td></tr>
+</table>
+
+<h3>Phase 2で追加予定</h3>
+<table>
+  <tr><th>用途</th><th>Ch</th><th>方針</th></tr>
+  <tr><td>BGM</td><td>ch0〜2</td><td>規則的な機械音ループ</td></tr>
+</table>
+
+<!-- 8. Phase 2 詳細設計 -->
+<h2 id="phase2">8. Phase 2 詳細設計</h2>
+
+<h3>8.1 高解像度化（企画提案）</h3>
+<p><strong>目的：</strong>ドットのガタつきを解消し、よりリアルで美しい歯車を描画する</p>
+<p><strong>アプローチ案：</strong></p>
+<ul>
+  <li>解像度を 320x240 → 480x360 または 640x480 に拡大</li>
+  <li>歯車の半径も比例して拡大（描画ドット数増加で滑らかに）</li>
+  <li>歯の形状パラメータの微調整</li>
+  <li>アンチエイリアス的な中間色による輪郭のなめらかさ向上</li>
+  <li>スポークの太さ（複数ライン描画）の検討</li>
+</ul>
+<p><strong>注意点：</strong></p>
+<ul>
+  <li>Pyxelの最大画面サイズ制約の確認</li>
+  <li>ウィンドウ表示サイズとのバランス</li>
+  <li>歯車サイズ変更時は <code>mesh_dist</code> により自動でスロット位置が再計算される</li>
+</ul>
+
+<h3>8.2 配置成功時の発光演出</h3>
+<p>配置直後の10〜15フレーム、歯車を明るい色（黄色）で描画。フレームカウンタで制御。</p>
+
+<h3>8.3 ゴースト表示（配置プレビュー）</h3>
+<p>手持ち選択中にスロット上にマウスを近づけると、点滅で歯車のシルエットを表示。配置前にサイズ感を確認できる。</p>
+
+<h3>8.4 ステージ開始演出</h3>
+<p>ステージ読み込み時に「STAGE N」を画面中央に大きく表示（2秒間）。フェードアウト後にプレイ開始。</p>
+
+<h3>8.5 ステージ間トランジション</h3>
+<p>クリア後のENTER → 画面が暗転 → 次ステージがフェードイン。</p>
+
+<h3>8.6 やり直し機能</h3>
+<p>配置済み歯車を右クリックで手持ちに戻す。以降の連鎖歯車も同時に外れる。</p>
+
+<h3>8.7 マウス追従</h3>
+<p>選択中の歯車の小さなアイコンをマウスカーソル位置に点滅描画。</p>
+
+<h3>8.8 BGM</h3>
+<ul>
+  <li>ch0: ベースリズム（低音の規則的パルス）</li>
+  <li>ch1: 機械音（金属的な中音域のループ）</li>
+  <li>ch2: アクセント（高音域の短いフレーズ）</li>
+</ul>
+<p>工場の機械が稼働している雰囲気を目指す。</p>
+
+<!-- 9. 関連ファイル -->
+<h2 id="files">9. 関連ファイル</h2>
+<table>
+  <tr><th>ファイル</th><th>内容</th></tr>
+  <tr><td><code>cogs.py</code></td><td>メインゲームコード</td></tr>
+  <tr><td><code>CLAUDE.md</code></td><td>Pyxelのルール・開発指針</td></tr>
+  <tr><td><code>COGS_企画書.pptx</code></td><td>ゲーム企画書（全7スライド）</td></tr>
+  <tr><td><code>COGS_引き継ぎ.md</code></td><td>Coworkモードからの引き継ぎ</td></tr>
+  <tr><td><code>COGS_仕様書.md</code></td><td>本ドキュメント（Markdown版）</td></tr>
+  <tr><td><code>COGS_仕様書.html</code></td><td>本ドキュメント（HTML版）</td></tr>
+</table>
+
+</div>
+</body>
+</html>
