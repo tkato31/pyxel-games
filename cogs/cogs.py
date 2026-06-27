@@ -667,7 +667,7 @@ class App:
             g.draw(col)
 
         pyxel.rect(0, 295, 512, 384, 1)
-        pyxel.text(4, 298, "HAND:", 7)
+        pyxel.text(4, 298, "HandGear:", 7)
         for h in self.hand:
             h.draw()
 
