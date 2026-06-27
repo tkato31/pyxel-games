@@ -13,6 +13,7 @@ class Gear:
         self.fixed = fixed
         self.tooth_len = max(3, self.radius // 3)
         self.base_speed = speed
+        self.flash_timer = 0
 
     def update(self, speed_mult=1.0):
         self.angle += self.speed * speed_mult
@@ -601,6 +602,8 @@ class App:
         self.on_title = True
         self.current_bgm = -1
         self.danger_wait = 0
+        self.fade_timer = 0
+        self.fade_next_stage = -1
 
         self.title_gears = [
             Gear(x=30, y=380, teeth=20, radius=100, speed=0.15),
@@ -710,6 +713,7 @@ class App:
                         radius=hand_gear.radius, speed=speed,
                         angle=angle, fixed=True)
         new_gear.gear_hand_index = hand_gear.hand_index
+        new_gear.flash_timer = 15
         self.gears.append(new_gear)
         slot.gear = new_gear
 
@@ -744,6 +748,14 @@ class App:
                 self.play_bgm(0)
             return
 
+        if self.fade_timer > 0:
+            self.fade_timer -= 1
+            if self.fade_timer == 0 and self.fade_next_stage >= 0:
+                self.load_stage(self.fade_next_stage)
+                self.play_bgm(0)
+                self.fade_next_stage = -1
+            return
+
         if self.intro_timer > 0:
             self.intro_timer -= 1
             if self.intro_timer == 0:
@@ -758,8 +770,8 @@ class App:
 
             if self.clear_timer > 120 and pyxel.btnp(pyxel.KEY_RETURN):
                 if self.stage_idx + 1 < len(STAGES):
-                    self.load_stage(self.stage_idx + 1)
-                    self.play_bgm(0)
+                    self.fade_timer = 30
+                    self.fade_next_stage = self.stage_idx + 1
                 else:
                     self.all_clear = True
                     self.play_bgm(3)
@@ -778,6 +790,8 @@ class App:
 
         for g in self.gears:
             g.update()
+            if g.flash_timer > 0:
+                g.flash_timer -= 1
 
         if self.message_timer > 0:
             self.message_timer -= 1
@@ -864,14 +878,36 @@ class App:
         for i, g in enumerate(self.gears):
             if self.cleared and (pyxel.frame_count // 4) % 2 == 0:
                 col = 10
+            elif g.flash_timer > 0 and (pyxel.frame_count // 2) % 2 == 0:
+                col = 10
             else:
                 col = GEAR_COLORS[i % len(GEAR_COLORS)]
             g.draw(col)
+
+        if self.selected_hand and not self.cleared:
+            mx, my = pyxel.mouse_x, pyxel.mouse_y
+            for s in self.slots:
+                if s.gear:
+                    continue
+                dx = mx - s.x
+                dy = my - s.y
+                detect_r = self.selected_hand.radius + self.selected_hand.tooth_len + 10
+                if dx * dx + dy * dy <= detect_r * detect_r:
+                    if (pyxel.frame_count // 10) % 3 != 0:
+                        ghost = Gear(s.x, s.y, self.selected_hand.teeth,
+                                     self.selected_hand.radius)
+                        ghost.draw(1)
+                    break
 
         pyxel.rect(0, 295, 512, 384, 1)
         pyxel.text(4, 298, "HandGear:", 7)
         for h in self.hand:
             h.draw()
+
+        if self.selected_hand and not self.cleared:
+            mx, my = pyxel.mouse_x, pyxel.mouse_y
+            label = str(self.selected_hand.teeth) + "T"
+            pyxel.text(mx + 8, my - 4, label, 10)
 
         if self.message_timer > 0:
             tw = len(self.message) * 4
@@ -881,6 +917,9 @@ class App:
 
     def draw(self):
         pyxel.cls(0)
+
+        if self.fade_timer > 0:
+            return
 
         if self.on_title:
             for g in self.title_gears:
