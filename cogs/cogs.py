@@ -37,14 +37,26 @@ class Gear:
                       self.x+math.cos(tra)*r_out, self.y+math.sin(tra)*r_out,
                       self.x+math.cos(tla)*r_out, self.y+math.sin(tla)*r_out, col)
         pyxel.circ(self.x, self.y, self.radius, col)
-        for i in range(4):
-            sa = math.radians(self.angle) + math.pi/2*i
+
+        gtype = self.gear_type
+        spoke_counts = {
+            GEAR_NORMAL: 4, GEAR_SAME: 2, GEAR_AMP: 6,
+            GEAR_REDUCE: 3, GEAR_LARGE: 8, GEAR_FIXED: 4,
+        }
+        n_spokes = spoke_counts.get(gtype, 4)
+        for i in range(n_spokes):
+            sa = math.radians(self.angle) + 2 * math.pi * i / n_spokes
             pyxel.line(self.x, self.y, self.x+math.cos(sa)*(self.radius+tl),
                        self.y+math.sin(sa)*(self.radius+tl), 0)
-        hole_r = max(2, self.radius // 3)
+
+        hole_r = max(3, int(self.radius / 1.8))
         pyxel.circ(self.x, self.y, hole_r, 0)
         pyxel.circb(self.x, self.y, hole_r, col)
-        pyxel.pset(self.x, self.y, col)
+
+        marks = {GEAR_SAME: "=", GEAR_AMP: "+", GEAR_REDUCE: "-", GEAR_LARGE: "L"}
+        mark = marks.get(gtype)
+        if mark:
+            pyxel.text(self.x - 1, self.y - 2, mark, col)
 
 
 # --- ギアタイプ ---
@@ -580,6 +592,8 @@ class App:
 
         self.stage_idx = 0
         self.grid = None
+        self.show_help = False
+        self.help_page = 0
         self.hand = []
         self.selected_hand = -1
         self.actions_left = 0
@@ -697,11 +711,26 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
+        if self.show_help:
+            if pyxel.btnp(pyxel.KEY_ESCAPE) or pyxel.btnp(pyxel.KEY_Q):
+                self.show_help = False
+                return
+            if pyxel.btnp(pyxel.KEY_RIGHT) or pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
+                self.help_page += 1
+                if self.help_page >= 4:
+                    self.show_help = False
+            if pyxel.btnp(pyxel.KEY_LEFT):
+                self.help_page = max(0, self.help_page - 1)
+            return
+
         if self.on_title:
             if pyxel.btnp(pyxel.KEY_RETURN):
                 self.on_title = False
                 self.load_stage(0)
                 self.play_bgm(0)
+            elif pyxel.btnp(pyxel.KEY_H):
+                self.show_help = True
+                self.help_page = 0
             return
 
         if self.fade_state > 0:
@@ -786,12 +815,187 @@ class App:
                     col = pyxel.pget(min(x+bs//2, 511), min(y+bs//2, 383))
                     pyxel.rect(x, y, bs, bs, col)
 
+    def draw_help_gear(self, cx, cy, teeth, radius, col, speed=0.5, gtype=GEAR_NORMAL):
+        g = Gear(cx, cy, teeth, radius)
+        g.angle = pyxel.frame_count * speed
+        g.gear_type = gtype
+        g.draw(col)
+
+    def draw_help_machine(self, cx, cy, col, dir_speed=3):
+        pyxel.rectb(cx-12, cy-12, 24, 24, col)
+        pyxel.rectb(cx-11, cy-11, 22, 22, col)
+        a = math.radians(pyxel.frame_count * dir_speed)
+        ax = cx + math.cos(a) * 7
+        ay = cy + math.sin(a) * 7
+        pyxel.line(cx, cy, ax, ay, col)
+        t1 = a + math.pi * 0.75
+        t2 = a - math.pi * 0.75
+        pyxel.line(ax, ay, ax + math.cos(t1)*3, ay + math.sin(t1)*3, col)
+        pyxel.line(ax, ay, ax + math.cos(t2)*3, ay + math.sin(t2)*3, col)
+
+    def draw_help(self):
+        pyxel.rect(20, 20, 472, 344, 1)
+        pyxel.rectb(20, 20, 472, 344, 5)
+        p = self.help_page
+
+        pyxel.text(230, 28, f"HELP ({p+1}/4)", 7)
+        pyxel.text(180, 356, "CLICK / RIGHT KEY: NEXT", 5)
+        if p > 0:
+            pyxel.text(30, 356, "LEFT KEY: BACK", 5)
+
+        if p == 0:
+            pyxel.text(40, 50, "HOW TO PLAY", 10)
+
+            self.draw_help_gear(60, 100, 8, 14, 10, 0.5)
+            pyxel.text(54, 118, "P2", 10)
+            self.draw_help_gear(105, 100, 8, 12, 13, -0.5)
+            pyxel.text(99, 118, "P2", 5)
+            self.draw_help_gear(145, 100, 8, 12, 13, 0.5)
+            pyxel.text(139, 118, "P2", 5)
+            self.draw_help_gear(185, 100, 8, 12, 13, -0.5)
+            pyxel.text(179, 118, "P2", 5)
+            self.draw_help_machine(225, 100, 11, 3)
+            pyxel.text(219, 118, "P2", 11)
+
+            pyxel.text(260, 85, "Motor -> Gears -> Machine", 7)
+            pyxel.text(260, 100, "Deliver POWER in right", 7)
+            pyxel.text(260, 112, "DIRECTION to activate!", 7)
+
+            pyxel.text(40, 145, "CONTROLS:", 10)
+            pyxel.text(40, 165, "LEFT CLICK  : Select gear / Place", 7)
+            pyxel.text(40, 180, "RIGHT CLICK : Remove placed gear", 7)
+            pyxel.text(40, 195, "Q           : Quit", 7)
+
+            pyxel.text(40, 225, "GOAL:", 10)
+            pyxel.text(40, 245, "All machines turn", 7)
+            self.draw_help_machine(200, 250, 8, 3)
+            pyxel.text(220, 245, "RED ->", 8)
+            self.draw_help_machine(270, 250, 11, 3)
+            pyxel.text(290, 245, "GREEN!", 11)
+
+        elif p == 1:
+            pyxel.text(40, 50, "GEAR TYPES", 10)
+
+            y = 78
+            gears_info = [
+                ("Normal", 13, "Reverse dir. Power same.", 0.4),
+                ("Same =", 12, "Keep dir. Power same.", 0.4),
+                ("Amp +", 9, "Reverse dir. Power +1.0!", -0.4),
+                ("Reduce -", 3, "Reverse dir. Power -0.5", 0.4),
+            ]
+            gtypes = [GEAR_NORMAL, GEAR_SAME, GEAR_AMP, GEAR_REDUCE]
+            for idx, (name, col, desc, spd) in enumerate(gears_info):
+                self.draw_help_gear(55, y, 8, 10, col, spd, gtypes[idx])
+                pyxel.text(75, y - 6, name, col)
+                pyxel.text(75, y + 5, desc, 5)
+                y += 38
+
+            self.draw_help_gear(55, y, 12, 16, 6, -0.3, GEAR_LARGE)
+            pyxel.text(80, y - 6, "Large L", 6)
+            pyxel.text(80, y + 5, "2x2 size. More branches.", 5)
+
+            pyxel.text(250, 78, "Chain example:", 10)
+            self.draw_help_gear(270, 115, 8, 10, 10, 0.5)
+            pyxel.text(265, 132, "M", 10)
+            self.draw_help_gear(305, 115, 8, 9, 13, -0.5, GEAR_NORMAL)
+            self.draw_help_gear(335, 115, 8, 9, 12, -0.5, GEAR_SAME)
+            self.draw_help_gear(365, 115, 8, 9, 9, 0.5, GEAR_AMP)
+            pyxel.text(290, 140, "N", 13)
+            pyxel.text(322, 140, "=", 12)
+            pyxel.text(355, 140, "+", 9)
+
+            pyxel.text(250, 165, "Dir: CW->CCW->CCW->CW", 5)
+            pyxel.text(250, 178, "Pwr: 1 -> 1 -> 1 -> 2", 5)
+
+        elif p == 2:
+            pyxel.text(40, 50, "POWER SPLITTING", 10)
+
+            self.draw_help_gear(80, 100, 8, 14, 10, 0.5)
+            pyxel.text(74, 120, "P4", 10)
+            self.draw_help_gear(125, 100, 8, 12, 13, -0.5)
+            pyxel.text(119, 120, "P4", 5)
+            self.draw_help_gear(165, 100, 8, 12, 13, 0.5)
+            pyxel.text(155, 120, "SPLIT!", 10)
+            self.draw_help_gear(165, 65, 8, 9, 13, -0.4)
+            pyxel.text(180, 58, "P2", 11)
+            self.draw_help_gear(165, 135, 8, 9, 13, -0.4)
+            pyxel.text(180, 135, "P2", 11)
+
+            pyxel.text(220, 75, "Power splits equally", 7)
+            pyxel.text(220, 90, "at branch points!", 7)
+
+            pyxel.text(40, 170, "AMP POSITION MATTERS!", 10)
+
+            pyxel.text(40, 195, "Before split:", 7)
+            self.draw_help_gear(55, 225, 8, 9, 10, 0.4)
+            pyxel.text(50, 240, "P1", 10)
+            self.draw_help_gear(85, 225, 8, 9, 9, -0.4)
+            pyxel.text(78, 240, "+P2", 9)
+            self.draw_help_gear(115, 210, 8, 7, 13, 0.3)
+            pyxel.text(128, 207, "P1", 11)
+            self.draw_help_gear(115, 240, 8, 7, 13, 0.3)
+            pyxel.text(128, 240, "P1", 11)
+
+            pyxel.text(200, 195, "After split:", 7)
+            self.draw_help_gear(215, 225, 8, 9, 10, 0.4)
+            pyxel.text(209, 240, "P1", 10)
+            self.draw_help_gear(245, 210, 8, 7, 13, -0.3)
+            pyxel.text(258, 207, "P0.5", 8)
+            self.draw_help_gear(280, 210, 8, 7, 9, 0.3)
+            pyxel.text(293, 207, "P1.5!", 11)
+            self.draw_help_gear(245, 240, 8, 7, 13, -0.3)
+            pyxel.text(258, 240, "P0.5", 8)
+
+            pyxel.rect(40, 280, 420, 20, 0)
+            pyxel.text(50, 285, "Same amp, different position = different result!", 10)
+
+        elif p == 3:
+            pyxel.text(40, 50, "MOTOR & MACHINE", 10)
+
+            pyxel.text(40, 75, "MOTOR", 10)
+            self.draw_help_gear(60, 110, 8, 16, 10, 0.5)
+            pyxel.text(52, 132, "P2", 10)
+            pyxel.text(90, 100, "Power source.", 7)
+            pyxel.text(90, 115, "Always spinning.", 7)
+
+            pyxel.text(40, 155, "MACHINE", 10)
+            self.draw_help_machine(60, 190, 8, 3)
+            pyxel.text(52, 210, "P2", 8)
+            pyxel.text(90, 175, "Arrow = required direction", 7)
+            pyxel.text(90, 190, "Number = required power", 7)
+
+            pyxel.text(250, 75, "Activated:", 10)
+            self.draw_help_gear(280, 115, 8, 12, 13, -0.5)
+            self.draw_help_machine(320, 115, 11, 3)
+            pyxel.text(314, 135, "P2", 11)
+            pyxel.text(345, 108, "GREEN!", 11)
+
+            pyxel.text(250, 155, "Failed:", 10)
+            self.draw_help_machine(280, 190, 8, -3)
+            pyxel.text(274, 210, "P2", 8)
+            pyxel.text(305, 183, "RED = wrong dir", 8)
+            pyxel.text(305, 196, "or not enough power", 8)
+
+            pyxel.text(40, 250, "DUAL MACHINE (Triple border)", 10)
+            cx, cy = 80, 290
+            pyxel.rectb(cx-12, cy-12, 24, 24, 14)
+            pyxel.rectb(cx-11, cy-11, 22, 22, 14)
+            pyxel.rectb(cx-10, cy-10, 20, 20, 14)
+            a = math.radians(pyxel.frame_count * 3)
+            pyxel.line(cx, cy, cx+math.cos(a)*7, cy+math.sin(a)*7, 14)
+            pyxel.text(100, 280, "Needs 2+ spinning gears", 7)
+            pyxel.text(100, 295, "next to it. Power sums up.", 7)
+
     def draw_title_gear(self, cx, cy, teeth, radius, col, speed=0.5):
         gear = Gear(cx, cy, teeth, radius)
         gear.angle = pyxel.frame_count * speed
         gear.draw(col)
 
     def draw_scene(self):
+        if self.show_help:
+            self.draw_help()
+            return
+
         if self.on_title:
             self.draw_title_gear(50, 340, 20, 80, 1, -0.3)
             self.draw_title_gear(440, 90, 12, 24, 1, 0.5)
@@ -823,6 +1027,7 @@ class App:
             pyxel.text((512-21*4)//2, ty + 14*scale, "Fill the missing cog.", 5)
             if (pyxel.frame_count//20)%2:
                 pyxel.text((512-20*4)//2, 300, "PRESS ENTER TO START", 7)
+            pyxel.text((512-10*4)//2, 320, "H : HOW TO PLAY", 5)
             return
 
         stage = STAGES[self.stage_idx]
@@ -862,6 +1067,7 @@ class App:
                     cx, cy = self.grid.cell_center(col, row)
                     r = GEAR_RADIUS+10 if gtype == GEAR_LARGE else GEAR_RADIUS
                     ghost = Gear(cx, cy, h["teeth"], r)
+                    ghost.gear_type = gtype
                     ghost.draw(1)
 
         pyxel.rect(0, HAND_Y - 4, 512, 384 - HAND_Y + 4, 1)
@@ -873,6 +1079,7 @@ class App:
                 col = 10 if i == self.selected_hand else TYPE_COLORS.get(gtype, 7)
                 r = 9 if gtype == GEAR_LARGE else 8
                 gear = Gear(hx, HAND_Y + 16, h["teeth"], r)
+                gear.gear_type = gtype
                 gear.draw(col)
                 label = TYPE_LABELS.get(gtype, "")
                 pyxel.text(hx - 10, HAND_Y + 29, f'{label}{h["teeth"]}Tx{h["count"]}', 7)

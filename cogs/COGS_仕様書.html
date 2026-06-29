@@ -6,6 +6,7 @@
 <title>COGS 仕様書 v2</title>
 <style>
   :root { --bg:#1C2833; --bg-light:#2C3E50; --text:#ECF0F1; --accent:#F39C12; --accent2:#3498DB; --green:#2ECC71; --red:#E74C3C; --gray:#7F8C8D; --border:#34495E; --cyan:#00E5FF; }
+  html { scroll-behavior: smooth; }
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family:'Segoe UI','Meiryo',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
   .container { max-width:960px; margin:0 auto; padding:40px 24px; }
@@ -69,6 +70,7 @@
     <li><a href="#mechanics">ゲームメカニクス</a></li>
     <li><a href="#stages">ステージ設計</a></li>
     <li><a href="#sound">サウンド設計</a></li>
+    <li><a href="#help">ヘルプ画面</a></li>
     <li><a href="#flow">画面遷移</a></li>
     <li><a href="#todo">今後の予定</a></li>
     <li><a href="#versions">バージョン履歴</a></li>
@@ -107,6 +109,18 @@
 
 <!-- 3. ギアタイプ -->
 <h2 id="gears">3. ギアタイプ</h2>
+
+<h3>視覚的区別（色＋スポーク＋中心マーク）</h3>
+<table>
+  <tr><th>ギア</th><th>色</th><th>スポーク</th><th>中心マーク</th><th>回転</th><th>動力</th></tr>
+  <tr><td>通常</td><td style="color:#BDC3C7;">灰色</td><td>4本（十字）</td><td>なし</td><td>逆転</td><td>そのまま</td></tr>
+  <tr><td>同方向 =</td><td style="color:#00BCD4;">シアン</td><td>2本</td><td>=</td><td>維持</td><td>そのまま</td></tr>
+  <tr><td>増幅 +</td><td style="color:#F39C12;">橙</td><td>6本（星形）</td><td>+</td><td>逆転</td><td><strong>+1.0</strong></td></tr>
+  <tr><td>減速 -</td><td style="color:#27AE60;">緑</td><td>3本</td><td>-</td><td>逆転</td><td><strong>-0.5</strong></td></tr>
+  <tr><td>大型 L</td><td style="color:#3498DB;">水色</td><td>8本</td><td>L</td><td>逆転</td><td>そのまま</td></tr>
+  <tr><td>固定</td><td style="color:#566573;">暗い青</td><td>4本</td><td>なし</td><td>逆転</td><td>そのまま</td></tr>
+</table>
+<p style="font-size:0.85em; color:var(--gray);">穴サイズ: radius/1.8（マークが読みやすい大きさ）</p>
 
 <div class="gear-gallery">
   <div class="gear-card">
@@ -253,8 +267,230 @@ drawMachine('cv-machine','#E74C3C');
   <tr><td>musics[1]</td><td>タイトルBGM</td><td>プロトタイプ</td></tr>
 </table>
 
-<!-- 7. 画面遷移 -->
-<h2 id="flow">7. 画面遷移</h2>
+<!-- 7. ヘルプ画面 -->
+<h2 id="help">7. ヘルプ画面（4ページ）</h2>
+<p>タイトル画面で「H」キーを押すと表示。クリックまたは→キーで次ページ、←キーで前ページ。</p>
+
+<h3>ページ1: 遊び方</h3>
+<div class="highlight">
+  <strong style="color:var(--accent);">遊び方</strong>
+  <div style="display:flex; gap:20px; align-items:center; margin:12px 0;">
+    <canvas id="help-p1" width="280" height="60"></canvas>
+    <div>
+      <p style="margin:0;">モーターから機械まで歯車をつないで動力を届けよう。<br>
+      十分な動力を正しい回転方向で届けると機械が稼働する。</p>
+    </div>
+  </div>
+  <table>
+    <tr><th>操作</th><th>内容</th></tr>
+    <tr><td>左クリック</td><td>歯車を選択 / 配置</td></tr>
+    <tr><td>右クリック</td><td>配置した歯車を外す</td></tr>
+    <tr><td>Q</td><td>終了</td></tr>
+  </table>
+  <p><strong>目標:</strong> すべての機械を緑色にすること。<br>
+  赤 = 動力不足 または 回転方向が違う。</p>
+</div>
+
+<h3>ページ2: ギアの種類</h3>
+<div class="highlight">
+  <div style="display:flex; flex-wrap:wrap; gap:16px; margin:12px 0;">
+    <div style="text-align:center; min-width:80px;">
+      <canvas id="help-normal" width="50" height="50"></canvas>
+      <div style="font-size:0.8em; color:#BDC3C7;">通常ギア<br>逆転 / P同じ</div>
+    </div>
+    <div style="text-align:center; min-width:80px;">
+      <canvas id="help-same" width="50" height="50"></canvas>
+      <div style="font-size:0.8em; color:#00BCD4;">同方向ギア =<br>維持 / P同じ</div>
+    </div>
+    <div style="text-align:center; min-width:80px;">
+      <canvas id="help-amp" width="50" height="50"></canvas>
+      <div style="font-size:0.8em; color:#F39C12;">増幅ギア +<br>逆転 / <strong>P+1.0</strong></div>
+    </div>
+    <div style="text-align:center; min-width:80px;">
+      <canvas id="help-reduce" width="50" height="50"></canvas>
+      <div style="font-size:0.8em; color:#27AE60;">減速ギア -<br>逆転 / <strong>P-0.5</strong></div>
+    </div>
+    <div style="text-align:center; min-width:80px;">
+      <canvas id="help-large" width="50" height="50"></canvas>
+      <div style="font-size:0.8em; color:#3498DB;">大型ギア L<br>2x2 / 逆転</div>
+    </div>
+  </div>
+  <table>
+    <tr><th>ギア</th><th>回転方向</th><th>動力</th><th>用途</th></tr>
+    <tr><td><strong>通常ギア</strong></td><td>逆転</td><td>そのまま</td><td>基本の伝達</td></tr>
+    <tr><td><strong>同方向ギア =</strong></td><td>維持</td><td>そのまま</td><td>方向の調整に使う</td></tr>
+    <tr><td><strong>増幅ギア +</strong></td><td>逆転</td><td><strong>+1.0</strong></td><td>分岐で失った動力を補う</td></tr>
+    <tr><td><strong>減速ギア -</strong></td><td>逆転</td><td><strong>-0.5</strong></td><td>動力を下げる</td></tr>
+    <tr><td><strong>大型ギア L</strong></td><td>逆転</td><td>そのまま</td><td>2x2マス。分岐の起点に有利</td></tr>
+  </table>
+</div>
+
+<h3>ページ3: 動力の分岐</h3>
+<div class="highlight">
+  <p>歯車が2つ以上の歯車に接続すると、<strong style="color:var(--accent);">動力が均等に分かれる！</strong></p>
+  <canvas id="help-split" width="400" height="120"></canvas>
+  <p><strong style="color:var(--accent);">増幅ギアの位置が重要！</strong></p>
+  <canvas id="help-amp-pos" width="400" height="140"></canvas>
+  <table>
+    <tr><th>パターン</th><th>計算</th><th>各経路の動力</th></tr>
+    <tr><td>分岐前に増幅</td><td>P1 → 増幅(P2) → 分岐</td><td>各 P1.0</td></tr>
+    <tr><td>分岐後に増幅</td><td>P1 → 分岐 → P0.5 → 増幅</td><td>増幅側 P1.5</td></tr>
+  </table>
+  <p>同じ増幅でも、置く場所で結果が変わる。</p>
+</div>
+
+<h3>ページ4: モーターと機械</h3>
+<div class="highlight">
+  <div style="display:flex; gap:20px; align-items:center; margin:12px 0;">
+    <canvas id="help-motor" width="60" height="80"></canvas>
+    <div>
+      <p style="margin:0;"><strong style="color:#F39C12;">モーター（黄色）</strong><br>
+      動力源。動力値（P1, P2...）を出力する。常に回転している。</p>
+    </div>
+  </div>
+  <div style="display:flex; gap:20px; align-items:center; margin:12px 0;">
+    <canvas id="help-machine-demo" width="120" height="80"></canvas>
+    <div>
+      <p style="margin:0;"><strong style="color:#E74C3C;">機械（赤</strong> / <strong style="color:#2ECC71;">緑）</strong><br>
+      動力を届ける対象。矢印が必要な回転方向を示す。<br>
+      数字が必要な動力値を示す。条件を満たすと赤→緑に変化。</p>
+    </div>
+  </div>
+  <p><strong>デュアル機械（三重枠）</strong><br>
+  2つ以上の隣接歯車が回転している必要がある。<br>
+  すべての隣接歯車の動力が合算される。</p>
+</div>
+
+<script>
+(function(){
+  let frame = 0;
+  function animGear(ctx,cx,cy,teeth,radius,col,angle){
+    const tl=Math.max(3,radius/3),bh=Math.PI/teeth*0.7,th=Math.PI/teeth*0.4;
+    for(let i=0;i<teeth;i++){
+      const a=angle+2*Math.PI*i/teeth;
+      ctx.beginPath();
+      ctx.moveTo(cx+Math.cos(a-bh)*radius,cy+Math.sin(a-bh)*radius);
+      ctx.lineTo(cx+Math.cos(a-th)*(radius+tl),cy+Math.sin(a-th)*(radius+tl));
+      ctx.lineTo(cx+Math.cos(a+th)*(radius+tl),cy+Math.sin(a+th)*(radius+tl));
+      ctx.lineTo(cx+Math.cos(a+bh)*radius,cy+Math.sin(a+bh)*radius);
+      ctx.closePath();ctx.fillStyle=col;ctx.fill();
+    }
+    ctx.beginPath();ctx.arc(cx,cy,radius,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();
+    for(let i=0;i<4;i++){
+      const sa=angle+Math.PI/2*i;
+      ctx.beginPath();ctx.moveTo(cx,cy);
+      ctx.lineTo(cx+Math.cos(sa)*(radius+tl),cy+Math.sin(sa)*(radius+tl));
+      ctx.strokeStyle='#1C2833';ctx.lineWidth=1.5;ctx.stroke();
+    }
+    const hr=Math.max(2,radius/3);
+    ctx.beginPath();ctx.arc(cx,cy,hr,0,Math.PI*2);ctx.fillStyle='#1C2833';ctx.fill();
+    ctx.beginPath();ctx.arc(cx,cy,hr,0,Math.PI*2);ctx.strokeStyle=col;ctx.lineWidth=1;ctx.stroke();
+  }
+  function label(ctx,x,y,text,col){ctx.fillStyle=col;ctx.font='11px Consolas,monospace';ctx.fillText(text,x,y);}
+  function arrow(ctx,cx,cy,angle,r,col){
+    const ax=cx+Math.cos(angle)*r,ay=cy+Math.sin(angle)*r;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ax,ay);ctx.strokeStyle=col;ctx.lineWidth=2;ctx.stroke();
+    const t1=angle+Math.PI*0.75,t2=angle-Math.PI*0.75;
+    ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax+Math.cos(t1)*5,ay+Math.sin(t1)*5);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax+Math.cos(t2)*5,ay+Math.sin(t2)*5);ctx.stroke();
+  }
+
+  function render(){
+    frame++;
+    const t=frame*0.03;
+
+    // Page1: Motor -> gear -> gear -> Machine
+    const c1=document.getElementById('help-p1');
+    if(c1){const x=c1.getContext('2d');x.clearRect(0,0,280,60);
+      animGear(x,30,30,8,14,'#F39C12',t);label(x,20,58,'Motor','#F39C12');
+      animGear(x,80,30,8,12,'#BDC3C7',-t);label(x,72,58,'P2','#7F8C8D');
+      animGear(x,125,30,8,12,'#BDC3C7',t);label(x,117,58,'P2','#7F8C8D');
+      animGear(x,170,30,8,12,'#BDC3C7',-t);label(x,162,58,'P2','#7F8C8D');
+      // Machine
+      x.strokeStyle='#2ECC71';x.lineWidth=2;
+      x.strokeRect(205,16,28,28);x.strokeRect(207,18,24,24);
+      arrow(x,219,30,t*3,8,'#2ECC71');
+      label(x,212,58,'Machine','#2ECC71');
+    }
+
+    // Page2 individual gears
+    ['help-normal','help-same','help-amp','help-reduce','help-large'].forEach((id,i)=>{
+      const cv=document.getElementById(id);if(!cv)return;
+      const x=cv.getContext('2d');x.clearRect(0,0,50,50);
+      const cols=['#BDC3C7','#00BCD4','#F39C12','#27AE60','#3498DB'];
+      const r=i===4?18:14;
+      const teeth=i===4?12:8;
+      const spd=i%2===0?t:-t;
+      animGear(x,25,25,teeth,r,cols[i],spd);
+    });
+
+    // Page3: Split demo
+    const c3=document.getElementById('help-split');
+    if(c3){const x=c3.getContext('2d');x.clearRect(0,0,400,120);
+      animGear(x,40,60,8,16,'#F39C12',t);label(x,28,88,'Motor','#F39C12');label(x,30,16,'P4','#F39C12');
+      animGear(x,90,60,8,14,'#BDC3C7',-t);label(x,82,16,'P4','#BDC3C7');
+      animGear(x,135,60,8,14,'#BDC3C7',t);label(x,120,16,'P4 (split)','#F39C12');
+      // split up
+      animGear(x,135,20,8,10,'#BDC3C7',-t);label(x,155,18,'P2','#2ECC71');
+      // split down
+      animGear(x,135,100,8,10,'#BDC3C7',-t);label(x,155,105,'P2','#2ECC71');
+      // arrows
+      x.setLineDash([3,3]);x.strokeStyle='#F39C12';x.lineWidth=1;
+      x.beginPath();x.moveTo(150,55);x.lineTo(200,30);x.stroke();
+      x.beginPath();x.moveTo(150,65);x.lineTo(200,90);x.stroke();
+      x.setLineDash([]);
+      label(x,200,25,'-> Machine A (P2)','#2ECC71');
+      label(x,200,95,'-> Machine B (P2)','#2ECC71');
+    }
+
+    // Page3: Amp position demo
+    const c3b=document.getElementById('help-amp-pos');
+    if(c3b){const x=c3b.getContext('2d');x.clearRect(0,0,400,140);
+      // Before split
+      label(x,10,15,'Before split:','#F39C12');
+      animGear(x,30,50,8,12,'#F39C12',t);label(x,22,75,'P1','#F39C12');
+      animGear(x,70,50,8,12,'#F39C12',-t);label(x,60,75,'Amp','#F39C12');label(x,62,35,'P2','#2ECC71');
+      animGear(x,110,30,8,8,'#BDC3C7',t);label(x,125,30,'P1','#2ECC71');
+      animGear(x,110,70,8,8,'#BDC3C7',t);label(x,125,72,'P1','#2ECC71');
+
+      // After split
+      label(x,210,15,'After split:','#F39C12');
+      animGear(x,230,50,8,12,'#F39C12',t);label(x,222,75,'P1','#F39C12');
+      animGear(x,270,30,8,8,'#BDC3C7',-t);label(x,285,25,'P0.5','#E74C3C');
+      animGear(x,310,30,8,8,'#F39C12',t);label(x,325,25,'Amp','#F39C12');label(x,325,38,'P1.5','#2ECC71');
+      animGear(x,270,70,8,8,'#BDC3C7',-t);label(x,285,75,'P0.5','#E74C3C');
+    }
+
+    // Page4: Motor
+    const c4m=document.getElementById('help-motor');
+    if(c4m){const x=c4m.getContext('2d');x.clearRect(0,0,60,80);
+      animGear(x,30,30,8,18,'#F39C12',t);
+      label(x,18,65,'P2','#F39C12');
+    }
+
+    // Page4: Machine demo (off + on)
+    const c4d=document.getElementById('help-machine-demo');
+    if(c4d){const x=c4d.getContext('2d');x.clearRect(0,0,120,80);
+      // Off
+      x.strokeStyle='#E74C3C';x.lineWidth=2;
+      x.strokeRect(8,16,28,28);x.strokeRect(10,18,24,24);
+      arrow(x,22,30,t*3,8,'#E74C3C');
+      label(x,8,58,'OFF','#E74C3C');label(x,8,70,'P2','#E74C3C');
+      // On
+      x.strokeStyle='#2ECC71';
+      x.strokeRect(68,16,28,28);x.strokeRect(70,18,24,24);
+      arrow(x,82,30,t*3,8,'#2ECC71');
+      label(x,70,58,'ON!','#2ECC71');label(x,70,70,'P2','#2ECC71');
+    }
+
+    requestAnimationFrame(render);
+  }
+  render();
+})();
+</script>
+
+<!-- 8. 画面遷移 -->
+<h2 id="flow">8. 画面遷移</h2>
 <div class="flow-chart">
   <span class="flow-item">タイトル画面</span>
   <span class="flow-arrow">&darr; ENTER</span><br>
@@ -269,11 +505,11 @@ drawMachine('cv-machine','#E74C3C');
   <span class="flow-item">次ステージ or エンディング</span>
 </div>
 
-<!-- 8. 今後の予定 -->
-<h2 id="todo">8. 今後の予定</h2>
+<!-- 9. 今後の予定 -->
+<h2 id="todo">9. 今後の予定</h2>
 <ul>
-  <li>⬜ チュートリアル/ヘルプ画面（ギアの種類と機能を説明）</li>
-  <li>⬜ ギアの視覚的区別の改善（形・模様で一目で分かるように）</li>
+  <li>✅ ヘルプ画面（4ページ、ギアの種類・動力分岐・モーターと機械の説明）</li>
+  <li>✅ ギアの視覚的区別（スポーク本数＋中心マーク、穴サイズ拡大）</li>
   <li>⬜ ステージ追加（7-12、より高難度）</li>
   <li>⬜ ボーナスシステム（ステージクリア後にギア選択）</li>
   <li>⬜ お邪魔キャラ</li>
@@ -281,8 +517,8 @@ drawMachine('cv-machine','#E74C3C');
   <li>⬜ エンディング演出</li>
 </ul>
 
-<!-- 9. バージョン履歴 -->
-<h2 id="versions">9. バージョン履歴</h2>
+<!-- 10. バージョン履歴 -->
+<h2 id="versions">10. バージョン履歴</h2>
 
 <div class="version-box">
   <h4>v1（cogs_v1.py）</h4>
