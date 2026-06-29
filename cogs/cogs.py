@@ -527,6 +527,42 @@ FADE_OUT_FRAMES = [5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 1]
 FADE_IN_FRAMES = [1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
 
 
+# --- ボーナスシステム ---
+
+BONUS_POOLS = [
+    # Stage 1 clear
+    [
+        {"type": GEAR_NORMAL, "teeth": 8, "count": 2},
+        {"type": GEAR_NORMAL, "teeth": 8, "count": 1},
+        {"type": GEAR_SAME, "teeth": 8, "count": 1},
+    ],
+    # Stage 2 clear
+    [
+        {"type": GEAR_NORMAL, "teeth": 8, "count": 2},
+        {"type": GEAR_SAME, "teeth": 8, "count": 1},
+        {"type": GEAR_NORMAL, "teeth": 8, "count": 3},
+    ],
+    # Stage 3 clear
+    [
+        {"type": GEAR_SAME, "teeth": 8, "count": 1},
+        {"type": GEAR_LARGE, "teeth": 8, "count": 1},
+        {"type": GEAR_NORMAL, "teeth": 8, "count": 2},
+    ],
+    # Stage 4 clear
+    [
+        {"type": GEAR_LARGE, "teeth": 8, "count": 1},
+        {"type": GEAR_SAME, "teeth": 8, "count": 2},
+        {"type": GEAR_NORMAL, "teeth": 8, "count": 3},
+    ],
+    # Stage 5 clear
+    [
+        {"type": GEAR_LARGE, "teeth": 8, "count": 1},
+        {"type": GEAR_SAME, "teeth": 8, "count": 2},
+        {"type": GEAR_LARGE, "teeth": 8, "count": 1},
+    ],
+]
+
+
 # --- メインアプリ ---
 
 class App:
@@ -554,6 +590,10 @@ class App:
         self.fade_timer = 0
         self.fade_step_idx = 0
         self.fade_next_stage = -1
+        self.bonus_inventory = []
+        self.bonus_selecting = False
+        self.bonus_choices = []
+        self.bonus_selected = -1
 
         self.play_bgm(1)
         pyxel.run(self.update, self.draw)
@@ -594,6 +634,19 @@ class App:
                 "teeth": hd["teeth"],
                 "count": hd["count"],
             })
+        for bonus in self.bonus_inventory:
+            found = False
+            for h in self.hand:
+                if h["type"] == bonus["type"] and h["teeth"] == bonus["teeth"]:
+                    h["count"] += bonus["count"]
+                    found = True
+                    break
+            if not found:
+                self.hand.append({
+                    "type": bonus["type"],
+                    "teeth": bonus["teeth"],
+                    "count": bonus["count"],
+                })
 
     def show_message(self, text, frames=60):
         self.message = text
@@ -641,6 +694,75 @@ class App:
             pyxel.play(3, 2)
         elif self.actions_left <= 0:
             self.game_over = True
+
+    def start_bonus_select(self):
+        self.bonus_selecting = True
+        self.bonus_selected = -1
+        self.bonus_choices = BONUS_POOLS[self.stage_idx]
+        self.cleared = False
+
+    def update_bonus(self):
+        if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
+            mx, my = pyxel.mouse_x, pyxel.mouse_y
+            for i in range(len(self.bonus_choices)):
+                bx = 80 + i * 140
+                if bx - 30 <= mx <= bx + 30 and 160 <= my <= 220:
+                    self.bonus_selected = i
+                    return
+
+        if self.bonus_selected >= 0 and pyxel.btnp(pyxel.KEY_RETURN):
+            choice = self.bonus_choices[self.bonus_selected]
+            found = False
+            for b in self.bonus_inventory:
+                if b["type"] == choice["type"] and b["teeth"] == choice["teeth"]:
+                    b["count"] += choice["count"]
+                    found = True
+                    break
+            if not found:
+                self.bonus_inventory.append(dict(choice))
+            self.bonus_selecting = False
+            self.bonus_selected = -1
+            if self.stage_idx + 1 < len(STAGES):
+                self.fade_state = 1
+                self.fade_timer = 0
+                self.fade_next_stage = self.stage_idx + 1
+            else:
+                self.all_clear = True
+                self.play_bgm(1)
+
+    def draw_bonus(self):
+        pyxel.text((512 - 13 * 4) // 2, 80, "BONUS SELECT!", 10)
+        pyxel.text((512 - 24 * 4) // 2, 96, "CHOOSE A GEAR TO KEEP", 5)
+
+        type_colors = {GEAR_NORMAL: 13, GEAR_SAME: 12, GEAR_LARGE: 6}
+        type_labels = {GEAR_NORMAL: "", GEAR_SAME: "=", GEAR_LARGE: "L"}
+
+        for i, choice in enumerate(self.bonus_choices):
+            bx = 80 + i * 140
+            by = 170
+            gtype = choice.get("type", GEAR_NORMAL)
+            selected = (i == self.bonus_selected)
+            col = 10 if selected else type_colors.get(gtype, 7)
+
+            if selected:
+                pyxel.rectb(bx - 35, by - 40, 70, 90, 10)
+
+            r = GEAR_RADIUS + 8 if gtype == GEAR_LARGE else GEAR_RADIUS
+            gear = Gear(bx, by, choice["teeth"], r)
+            gear.draw(col)
+
+            label = type_labels.get(gtype, "")
+            pyxel.text(bx - 8, by + r + 8, f'{label}{choice["teeth"]}T x{choice["count"]}', 7)
+
+        if self.bonus_selected >= 0:
+            pyxel.text((512 - 18 * 4) // 2, 280, "PRESS ENTER TO GET", 7)
+
+        pyxel.text(4, 4, "COGS", 7)
+        inv_text = "INVENTORY: "
+        for b in self.bonus_inventory:
+            tl = type_labels.get(b["type"], "")
+            inv_text += f'{tl}{b["teeth"]}Tx{b["count"]} '
+        pyxel.text(4, 370, inv_text if self.bonus_inventory else "INVENTORY: (empty)", 5)
 
     def try_remove(self, col, row):
         pos, gear = self.grid.find_gear_at(col, row)
@@ -695,11 +817,17 @@ class App:
             self.intro_timer -= 1
             return
 
+        if self.bonus_selecting:
+            self.update_bonus()
+            return
+
         if self.cleared:
             self.clear_timer += 1
             self.grid.update()
             if self.clear_timer > 120 and pyxel.btnp(pyxel.KEY_RETURN):
-                if self.stage_idx + 1 < len(STAGES):
+                if self.stage_idx < len(BONUS_POOLS):
+                    self.start_bonus_select()
+                elif self.stage_idx + 1 < len(STAGES):
                     self.fade_state = 1
                     self.fade_timer = 0
                     self.fade_next_stage = self.stage_idx + 1
@@ -766,6 +894,10 @@ class App:
             if blink:
                 msg = "PRESS ENTER TO START"
                 pyxel.text((512 - len(msg) * 4) // 2, 250, msg, 7)
+            return
+
+        if self.bonus_selecting:
+            self.draw_bonus()
             return
 
         stage = STAGES[self.stage_idx]
