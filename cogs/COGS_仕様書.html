@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COGS 仕様書 v2</title>
+<style>
+  :root { --bg:#1C2833; --bg-light:#2C3E50; --text:#ECF0F1; --accent:#F39C12; --accent2:#3498DB; --green:#2ECC71; --red:#E74C3C; --gray:#7F8C8D; --border:#34495E; --cyan:#00E5FF; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Segoe UI','Meiryo',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
+  .container { max-width:960px; margin:0 auto; padding:40px 24px; }
+  h1 { font-size:2.4em; color:var(--accent); border-bottom:3px solid var(--accent); padding-bottom:12px; margin-bottom:8px; }
+  .subtitle { color:var(--gray); font-size:1.1em; margin-bottom:32px; }
+  h2 { font-size:1.5em; color:var(--accent2); margin-top:48px; margin-bottom:16px; border-left:4px solid var(--accent2); padding-left:12px; }
+  h3 { font-size:1.15em; color:var(--accent); margin-top:28px; margin-bottom:10px; }
+  p { margin-bottom:12px; }
+  table { width:100%; border-collapse:collapse; margin:16px 0; font-size:0.95em; }
+  th,td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+  th { background:var(--bg-light); color:var(--accent); }
+  tr:nth-child(even) { background:rgba(255,255,255,0.03); }
+  code { background:var(--bg-light); padding:2px 6px; border-radius:3px; font-family:'Consolas',monospace; font-size:0.9em; }
+  pre { background:var(--bg-light); padding:16px; border-radius:6px; overflow-x:auto; margin:12px 0; font-size:0.9em; line-height:1.5; }
+  pre code { background:none; padding:0; }
+  ul,ol { padding-left:20px; margin:8px 0; }
+  li { margin:4px 0; }
+  .meta { display:flex; gap:24px; flex-wrap:wrap; margin:16px 0; padding:16px; background:var(--bg-light); border-radius:8px; }
+  .meta-item { display:flex; flex-direction:column; }
+  .meta-label { font-size:0.75em; color:var(--gray); text-transform:uppercase; }
+  .meta-value { font-size:1.1em; color:var(--accent); font-weight:bold; }
+  .toc { background:var(--bg-light); padding:20px; border-radius:8px; margin:24px 0; }
+  .toc a { color:var(--accent2); text-decoration:none; }
+  .toc a:hover { text-decoration:underline; }
+  .toc li { margin:6px 0; }
+  .highlight { background:var(--bg-light); border-left:4px solid var(--accent); padding:16px; margin:16px 0; border-radius:0 8px 8px 0; }
+  .gear-gallery { display:flex; flex-wrap:wrap; gap:20px; margin:20px 0; }
+  .gear-card { background:var(--bg-light); border-radius:8px; padding:16px; text-align:center; min-width:130px; flex:1; }
+  .gear-card h4 { color:var(--accent); margin-bottom:8px; font-size:0.95em; }
+  .gear-card canvas { margin:4px 0; }
+  .gear-card .desc { font-size:0.8em; color:var(--gray); margin-top:6px; }
+  .flow-chart { background:var(--bg-light); padding:20px; border-radius:8px; margin:16px 0; text-align:center; line-height:2.2; }
+  .flow-item { display:inline-block; padding:6px 14px; margin:2px; border-radius:4px; background:var(--border); color:var(--text); }
+  .flow-arrow { color:var(--accent); margin:0 4px; }
+  .version-box { border:2px solid var(--border); border-radius:8px; padding:16px; margin:12px 0; }
+  .version-box.current { border-color:var(--green); }
+  .version-box h4 { margin-bottom:8px; }
+  .version-box.current h4 { color:var(--green); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>COGS v2</h1>
+<p class="subtitle">Fill the missing cog.</p>
+
+<div class="meta">
+  <div class="meta-item"><span class="meta-label">ジャンル</span><span class="meta-value">動力伝達パズル</span></div>
+  <div class="meta-item"><span class="meta-label">プラットフォーム</span><span class="meta-value">Python / Pyxel</span></div>
+  <div class="meta-item"><span class="meta-label">解像度</span><span class="meta-value">512 x 384</span></div>
+  <div class="meta-item"><span class="meta-label">グリッド</span><span class="meta-value">10 x 10 自由配置</span></div>
+  <div class="meta-item"><span class="meta-label">最終更新</span><span class="meta-value">2026-06-28</span></div>
+</div>
+
+<nav class="toc">
+  <strong>目次</strong>
+  <ol>
+    <li><a href="#concept">ゲーム概要</a></li>
+    <li><a href="#layout">画面レイアウト</a></li>
+    <li><a href="#gears">ギアタイプ</a></li>
+    <li><a href="#mechanics">ゲームメカニクス</a></li>
+    <li><a href="#stages">ステージ設計</a></li>
+    <li><a href="#sound">サウンド設計</a></li>
+    <li><a href="#flow">画面遷移</a></li>
+    <li><a href="#todo">今後の予定</a></li>
+    <li><a href="#versions">バージョン履歴</a></li>
+  </ol>
+</nav>
+
+<!-- 1. ゲーム概要 -->
+<h2 id="concept">1. ゲーム概要</h2>
+<p>モーターの動力を、歯車をつないで、すべての機械に必要な分だけ届けるパズルゲーム。</p>
+
+<div class="highlight">
+  <strong>パズルの核心</strong>
+  <ol>
+    <li><strong>動力分散</strong> — 分岐すると動力が均等に分かれる</li>
+    <li><strong>回転方向</strong> — 歯車チェーンで方向が反転。機械は特定の方向を要求</li>
+    <li><strong>増幅（加算式）</strong> — 増幅ギア(+1)で動力を補う。位置によって結果が変わる</li>
+    <li><strong>リソース制限</strong> — 歯車の種類と数が限られている</li>
+  </ol>
+</div>
+
+<div style="text-align:center; padding:20px; background:var(--bg-light); border-radius:8px; margin:16px 0;">
+  <pre style="background:none; font-size:1.1em; display:inline-block; text-align:left;">
+モーター(P4) → ギア → 分岐点
+                       ├→ ギア(P2) → 増幅(P3) → 機械A ✓
+                       └→ ギア(P2) → 機械B ✓</pre>
+</div>
+
+<!-- 2. 画面レイアウト -->
+<h2 id="layout">2. 画面レイアウト</h2>
+<table>
+  <tr><th>エリア</th><th>位置</th><th>内容</th></tr>
+  <tr><td>ステータスバー</td><td>上部 24px</td><td>COGS / STAGE名 / 操作ガイド / GEARS数 / ACTIONS数</td></tr>
+  <tr><td>グリッド</td><td>中央 320x320</td><td>10x10マス（1マス32px）、自由配置</td></tr>
+  <tr><td>HandGearエリア</td><td>下部 44px</td><td>配置可能な歯車（種類別色分け・残数表示）</td></tr>
+</table>
+
+<!-- 3. ギアタイプ -->
+<h2 id="gears">3. ギアタイプ</h2>
+
+<div class="gear-gallery">
+  <div class="gear-card">
+    <h4>通常ギア</h4>
+    <canvas id="cv-normal" width="60" height="60"></canvas>
+    <div class="desc">逆転 / 動力そのまま<br>色: 灰色 (13)</div>
+  </div>
+  <div class="gear-card">
+    <h4>同方向ギア =</h4>
+    <canvas id="cv-same" width="60" height="60"></canvas>
+    <div class="desc">同方向 / 動力そのまま<br>色: シアン (12)</div>
+  </div>
+  <div class="gear-card">
+    <h4>増幅ギア +</h4>
+    <canvas id="cv-amp" width="60" height="60"></canvas>
+    <div class="desc">逆転 / 動力<strong>+1.0</strong><br>色: 橙 (9)</div>
+  </div>
+  <div class="gear-card">
+    <h4>減速ギア -</h4>
+    <canvas id="cv-reduce" width="60" height="60"></canvas>
+    <div class="desc">逆転 / 動力<strong>-0.5</strong><br>色: 緑 (3)</div>
+  </div>
+  <div class="gear-card">
+    <h4>大型ギア L</h4>
+    <canvas id="cv-large" width="60" height="60"></canvas>
+    <div class="desc">2x2マス / 逆転<br>色: 水色 (6)</div>
+  </div>
+  <div class="gear-card">
+    <h4>モーター</h4>
+    <canvas id="cv-motor" width="60" height="60"></canvas>
+    <div class="desc">動力源 / 常に回転<br>色: 黄色 (10)</div>
+  </div>
+  <div class="gear-card">
+    <h4>機械</h4>
+    <canvas id="cv-machine" width="60" height="60"></canvas>
+    <div class="desc">目的地 / 方向+動力<br>赤→緑で稼働</div>
+  </div>
+</div>
+
+<script>
+function drawGear(id,cx,cy,teeth,radius,col){
+  const cv=document.getElementById(id);if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const tl=Math.max(3,radius/3),bh=Math.PI/teeth*0.7,th=Math.PI/teeth*0.4;
+  for(let i=0;i<teeth;i++){
+    const a=2*Math.PI*i/teeth;
+    ctx.beginPath();
+    ctx.moveTo(cx+Math.cos(a-bh)*radius,cy+Math.sin(a-bh)*radius);
+    ctx.lineTo(cx+Math.cos(a-th)*(radius+tl),cy+Math.sin(a-th)*(radius+tl));
+    ctx.lineTo(cx+Math.cos(a+th)*(radius+tl),cy+Math.sin(a+th)*(radius+tl));
+    ctx.lineTo(cx+Math.cos(a+bh)*radius,cy+Math.sin(a+bh)*radius);
+    ctx.closePath();ctx.fillStyle=col;ctx.fill();
+  }
+  ctx.beginPath();ctx.arc(cx,cy,radius,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();
+  for(let i=0;i<4;i++){
+    const sa=Math.PI/2*i;
+    ctx.beginPath();ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+Math.cos(sa)*(radius+tl),cy+Math.sin(sa)*(radius+tl));
+    ctx.strokeStyle='#1C2833';ctx.lineWidth=1.5;ctx.stroke();
+  }
+  const hr=Math.max(2,radius/3);
+  ctx.beginPath();ctx.arc(cx,cy,hr,0,Math.PI*2);ctx.fillStyle='#1C2833';ctx.fill();
+  ctx.beginPath();ctx.arc(cx,cy,hr,0,Math.PI*2);ctx.strokeStyle=col;ctx.lineWidth=1;ctx.stroke();
+}
+function drawMachine(id,col){
+  const cv=document.getElementById(id);if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const bg=col==='#E74C3C'?'#2C0B0B':'#0B2C0B';
+  const px=3;
+  const data=["...............",".11111111111111.",".1............1.",".1.11......11.1.",".1.111....111.1.",".1.1.11..11.1.1.",".1.1..1111..1.1.",".1.1...11...1.1.",".1.1........1.1.",".1............1.",".11111111111111.","..............."];
+  for(let r=0;r<data.length;r++)
+    for(let c=0;c<data[r].length;c++){
+      ctx.fillStyle=data[r][c]==='1'?col:bg;
+      ctx.fillRect(c*px+6,r*px+10,px,px);
+    }
+}
+drawGear('cv-normal',30,30,8,16,'#BDC3C7');
+drawGear('cv-same',30,30,8,16,'#00BCD4');
+drawGear('cv-amp',30,30,8,16,'#F39C12');
+drawGear('cv-reduce',30,30,8,16,'#27AE60');
+drawGear('cv-large',30,30,12,22,'#3498DB');
+drawGear('cv-motor',30,30,8,16,'#F39C12');
+drawMachine('cv-machine','#E74C3C');
+</script>
+
+<!-- 4. ゲームメカニクス -->
+<h2 id="mechanics">4. ゲームメカニクス</h2>
+
+<h3>4.1 動力分散（v2の核心）</h3>
+<div class="highlight">
+  <pre style="background:none;">モーター(P4) → ギア(P4) → 分岐点(P4)
+                              ├→ ギア(<strong>P2</strong>)  ← 動力が半分に！
+                              └→ ギア(<strong>P2</strong>)  ← 動力が半分に！</pre>
+  <p>分岐点からN方向に分かれると、各方向に<strong>動力/N</strong>が配分される。</p>
+</div>
+
+<h3>4.2 増幅の加算式</h3>
+<table>
+  <tr><th>入力</th><th>増幅後</th><th>計算</th></tr>
+  <tr><td>P1.0</td><td>P2.0</td><td>1.0 + 1.0</td></tr>
+  <tr><td>P0.5</td><td>P1.5</td><td>0.5 + 1.0</td></tr>
+  <tr><td>P2.0</td><td>P3.0</td><td>2.0 + 1.0</td></tr>
+</table>
+<p><strong>分岐前に増幅</strong>と<strong>分岐後に増幅</strong>で結果が異なる → 位置が重要！</p>
+<pre><code>分岐前: P1 → Amp(P2) → 分岐 → 各P1
+分岐後: P1 → 分岐 → 各P0.5 → Amp(P1.5)</code></pre>
+
+<h3>4.3 回転方向</h3>
+<pre><code>モーター(↻) → 通常(↺) → 通常(↻) → 通常(↺) ...
+            → 同方向(↻) → 通常(↺) ...</code></pre>
+<table>
+  <tr><th>ギアタイプ</th><th>方向</th><th>動力</th></tr>
+  <tr><td>通常 / 増幅 / 減速 / 大型 / 固定</td><td>逆転</td><td>各種</td></tr>
+  <tr><td>同方向</td><td>維持</td><td>そのまま</td></tr>
+</table>
+
+<h3>4.4 クリア条件</h3>
+<ul>
+  <li>全ての機械が稼働状態であること</li>
+  <li>稼働 = 隣接歯車の回転方向が正しく、受信動力が要求値以上</li>
+  <li>デュアル機械 = 2つ以上の隣接歯車が回転 + 動力が要求値以上</li>
+</ul>
+
+<!-- 5. ステージ設計 -->
+<h2 id="stages">5. ステージ設計</h2>
+<table>
+  <tr><th>Stage</th><th>パズルポイント</th><th>プレイヤーが考えること</th></tr>
+  <tr><td>1</td><td>直線接続</td><td>つなぐだけ（チュートリアル）</td></tr>
+  <tr><td>2</td><td>動力分散</td><td>P2を分岐して2つの機械にP1ずつ届ける</td></tr>
+  <tr><td>3</td><td>増幅</td><td>P1モーターに増幅で+1してP2にする</td></tr>
+  <tr><td>4</td><td>分岐+増幅</td><td>分岐でP1に落ちた先に増幅で回復</td></tr>
+  <tr><td>5</td><td>方向+分岐</td><td>2機械が異なる方向要求。同方向ギアの位置が鍵</td></tr>
+  <tr><td>6</td><td>総合</td><td>P4モーターを分岐+方向制御で2機械に</td></tr>
+</table>
+
+<!-- 6. サウンド -->
+<h2 id="sound">6. サウンド設計</h2>
+<table>
+  <tr><th>種類</th><th>用途</th><th>継承元</th></tr>
+  <tr><td>sounds[0]</td><td>配置成功</td><td>プロトタイプ</td></tr>
+  <tr><td>sounds[1]</td><td>ミス / 配置不可</td><td>プロトタイプ</td></tr>
+  <tr><td>sounds[2]</td><td>ステージクリア</td><td>プロトタイプ</td></tr>
+  <tr><td>musics[0]</td><td>通常ステージBGM</td><td>プロトタイプ</td></tr>
+  <tr><td>musics[1]</td><td>タイトルBGM</td><td>プロトタイプ</td></tr>
+</table>
+
+<!-- 7. 画面遷移 -->
+<h2 id="flow">7. 画面遷移</h2>
+<div class="flow-chart">
+  <span class="flow-item">タイトル画面</span>
+  <span class="flow-arrow">&darr; ENTER</span><br>
+  <span class="flow-item">ステージ開始演出</span>
+  <span class="flow-arrow">&darr; 自動</span><br>
+  <span class="flow-item">プレイ画面</span>
+  <span class="flow-arrow">&darr; 全機械稼働</span><br>
+  <span class="flow-item">クリア演出</span>
+  <span class="flow-arrow">&darr; ENTER</span><br>
+  <span class="flow-item">モザイクフェード</span>
+  <span class="flow-arrow">&darr;</span><br>
+  <span class="flow-item">次ステージ or エンディング</span>
+</div>
+
+<!-- 8. 今後の予定 -->
+<h2 id="todo">8. 今後の予定</h2>
+<ul>
+  <li>⬜ チュートリアル/ヘルプ画面（ギアの種類と機能を説明）</li>
+  <li>⬜ ギアの視覚的区別の改善（形・模様で一目で分かるように）</li>
+  <li>⬜ ステージ追加（7-12、より高難度）</li>
+  <li>⬜ ボーナスシステム（ステージクリア後にギア選択）</li>
+  <li>⬜ お邪魔キャラ</li>
+  <li>⬜ 「立場の逆転」ステージ</li>
+  <li>⬜ エンディング演出</li>
+</ul>
+
+<!-- 9. バージョン履歴 -->
+<h2 id="versions">9. バージョン履歴</h2>
+
+<div class="version-box">
+  <h4>v1（cogs_v1.py）</h4>
+  <ul>
+    <li>迷路型ステージ（壁と通路）</li>
+    <li>回転方向パズル（方向のみ）</li>
+    <li>動力は分散なし（そのまま伝達）</li>
+    <li>増幅は乗算式（×2）</li>
+    <li>12ステージ + ボーナスシステム</li>
+    <li>課題: 「並べるだけ」でパズル要素が弱い</li>
+  </ul>
+</div>
+
+<div class="version-box current">
+  <h4>v2（cogs.py）← 現在</h4>
+  <ul>
+    <li>自由配置グリッド（10x10、壁なし）</li>
+    <li><strong>動力分散メカニクス</strong>（分岐で動力が分かれる）</li>
+    <li><strong>増幅は加算式（+1）</strong>→ 位置が重要</li>
+    <li>6ステージ（動力分散の基本パターン）</li>
+    <li>タイトル画面リニューアル</li>
+    <li>課題: ステージ設計の深化、チュートリアル整備</li>
+  </ul>
+</div>
+
+</div>
+</body>
+</html>
